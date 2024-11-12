@@ -1,0 +1,58 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: services
+build:
+  local:
+    push: false
+  artifacts:
+    - image: nejmimouhsine1/frontend
+      context: frontend
+      docker:
+        dockerfile: Dockerfile
+    - image: nejmimouhsine1/user-service
+      context: user-service
+      docker:
+        dockerfile: Dockerfile
+      # sync:
+      #   manual:
+      #     - src: 'src/**/*.ts'
+      #       dest: .
+    # - image: nejmimouhsine1/product-service
+    #   context: product-service
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: 'src/**/*.ts'
+    #         dest: .
+    # - image: nejmimouhsine1/cart-service
+    #   context: shopping-cart-service
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: 'src/**/*.ts'
+    #         dest: .
+    # - image: nejmimouhsine1/order-service
+    #   context: order-service
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: 'src/**/*.ts'
+    #         dest: .
+    # - image: nejmimouhsine1/payment-service
+    #   context: payment-service
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: 'src/**/*.ts'
+    #         dest: .
+manifests:
+  rawYaml:
+    - infra/k8s/ingress-srv.yaml
+    - infra/k8s/user-depl.yaml
+    - infra/k8s/user-mongo.yaml
+    - infra/k8s/frontend-depl.yaml

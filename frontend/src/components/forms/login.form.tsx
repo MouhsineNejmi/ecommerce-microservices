@@ -7,7 +7,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { Loader2 } from 'lucide-react';
-import { AxiosError } from 'axios';
 
 import { useAuth } from '@/providers/auth.provider';
 
@@ -36,7 +35,6 @@ const loginSchema = z.object({
 
 export const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
   const router = useRouter();
 
@@ -51,32 +49,10 @@ export const LoginForm = () => {
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     try {
       setIsLoading(true);
-      setError(null);
 
-      const response = await login(values.email, values.password);
-      console.log('RESPONSE: ', response);
-
+      await login(values.email, values.password);
       router.push('/dashboard');
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error.response) {
-          // Server returned a response (e.g., 400 or 401)
-          if (error.response.status === 401) {
-            setError('Invalid email or password. Please try again.');
-          } else if (error.response.status === 500) {
-            setError('Server error. Please try again later.');
-          } else {
-            setError('An error occurred. Please try again.');
-          }
-        } else if (error.request) {
-          // Network error or no response
-          setError('Network error. Please check your connection.');
-        } else {
-          setError('An unexpected error occurred.');
-        }
-      } else {
-        setError('An unexpected error occurred.');
-      }
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -93,12 +69,6 @@ export const LoginForm = () => {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-            {error && (
-              <p className='bg-red-300 border rounded-lg p-2 text-red-600 text-sm'>
-                {error}
-              </p>
-            )}
-
             <FormField
               control={form.control}
               name='email'

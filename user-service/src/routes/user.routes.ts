@@ -13,9 +13,9 @@ import {
 } from '../validations/user.validation';
 
 import { ConflictError } from '../errors/conflict.error';
-import { AuthenticationError } from '../errors/authentication.error';
 import { requireUser } from '../middlewares/require-user.middleware';
 import { NotFoundError } from '../errors/not-found.error';
+import { BadRequestError } from '../errors/bad-request.error';
 
 const router = express.Router();
 
@@ -28,7 +28,7 @@ router.post(
   registerValidation,
   validate,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     const userExists = await User.findOne({ email }).select('-password');
     if (userExists) {
@@ -39,6 +39,7 @@ router.post(
       name,
       email,
       password,
+      role,
     });
 
     const token = generateToken(user.id);
@@ -62,7 +63,7 @@ router.post(
 
     const user = await User.findOne({ email }).select('+password');
     if (!user || !(await Password.compare(user.password, password))) {
-      throw new AuthenticationError('Invalid Credentials');
+      throw new BadRequestError('Invalid Credentials');
     }
 
     const token = generateToken(user.id);

@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       const response = await authApi.login({ email, password });
-
       setUser(response);
       localStorage.setItem('user', JSON.stringify(response));
     } catch (error: any) {
@@ -41,13 +40,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         description:
           error.response?.data?.errors?.[0]?.message || 'Failed to login',
       });
-      throw error;
     }
   };
 
   const register = async (name: string, email: string, password: string) => {
     try {
       const response = await authApi.register({ name, email, password });
+      console.log('REGISTER RESPONSE: ', response);
+
       setUser(response);
       localStorage.setItem('user', JSON.stringify(response));
     } catch (error: any) {
@@ -57,7 +57,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         description:
           error.response?.data?.errors?.[0]?.message || 'Failed to register',
       });
-      throw error;
     }
   };
 
@@ -73,7 +72,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         description:
           error.response?.data?.errors?.[0]?.message || 'Failed to logout',
       });
-      throw error;
+      // throw error;
     }
   };
 

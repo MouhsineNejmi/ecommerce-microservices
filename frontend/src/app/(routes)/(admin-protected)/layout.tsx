@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
+import Loader from '@/components/loader';
 
 import { useAuth } from '@/providers/auth.provider';
 
@@ -23,8 +24,11 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
   }, [user, loading, router]);
 
   if (loading || !user) {
-    return null;
+    return <Loader />;
   }
+
+  console.log('LOADING: ', loading);
+  console.log('USER: ', user);
 
   return (
     <SidebarProvider>

@@ -61,11 +61,11 @@ export function RegisterForm() {
         values.email,
         values.password
       );
+
       console.log('REGISTER RESPONSE: ', response);
 
-      router.push('/dashboard');
-    } catch (error) {
-      console.error(error);
+      router.push('/');
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -123,7 +123,7 @@ export function RegisterForm() {
                 </FormItem>
               )}
             />
-            <Button type='submit' className='w-full' disabled={isLoading}>
+            <Button type='button' className='w-full' disabled={isLoading}>
               {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
               Register
             </Button>

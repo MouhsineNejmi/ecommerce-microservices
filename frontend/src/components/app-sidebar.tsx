@@ -25,7 +25,7 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { useAuth } from '@/providers/auth.provider';
+import { useAuthContext } from '@/providers/auth.provider';
 
 const data = {
   teams: [
@@ -154,7 +154,7 @@ const data = {
 export const AppSidebar = ({
   ...props
 }: React.ComponentProps<typeof Sidebar>) => {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   return (
     <Sidebar collapsible='icon' {...props}>

@@ -7,10 +7,10 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import Loader from '@/components/loader';
 
-import { useAuth } from '@/providers/auth.provider';
+import { useAuthContext } from '@/providers/auth.provider';
 
 const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuthContext();
   const router = useRouter();
 
   useEffect(() => {

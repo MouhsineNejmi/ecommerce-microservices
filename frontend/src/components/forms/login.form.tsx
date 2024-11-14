@@ -1,4 +1,4 @@
-// components/auth/login-form.tsx
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useState } from 'react';
@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { Loader2 } from 'lucide-react';
 
-import { useAuth } from '@/providers/auth.provider';
+import { useAuthContext } from '@/providers/auth.provider';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -35,7 +35,7 @@ const loginSchema = z.object({
 
 export const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, errors } = useAuthContext();
   const router = useRouter();
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -49,10 +49,8 @@ export const LoginForm = () => {
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     try {
       setIsLoading(true);
-
       await login(values.email, values.password);
-      router.push('/dashboard');
-    } catch {
+      router.push('/');
     } finally {
       setIsLoading(false);
     }
@@ -99,6 +97,7 @@ export const LoginForm = () => {
                 </FormItem>
               )}
             />
+            {errors}
             <Button type='submit' className='w-full' disabled={isLoading}>
               {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
               Login

@@ -1,4 +1,3 @@
-// components/auth/register-form.tsx
 'use client';
 
 import { useState } from 'react';
@@ -26,7 +25,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 
-import { useAuth } from '@/providers/auth.provider';
+import { useAuthContext } from '@/providers/auth.provider';
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters long'),
@@ -41,7 +40,7 @@ const registerSchema = z.object({
 
 export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const { register } = useAuth();
+  const { register, errors } = useAuthContext();
   const router = useRouter();
 
   const form = useForm<z.infer<typeof registerSchema>>({
@@ -65,7 +64,6 @@ export function RegisterForm() {
       console.log('REGISTER RESPONSE: ', response);
 
       router.push('/');
-    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -123,6 +121,7 @@ export function RegisterForm() {
                 </FormItem>
               )}
             />
+            {errors}
             <Button type='button' className='w-full' disabled={isLoading}>
               {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
               Register

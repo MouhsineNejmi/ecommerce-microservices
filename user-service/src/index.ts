@@ -26,6 +26,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS;
 
 app.use(json());
 app.use(cors({ origin: allowedOrigins?.split(',') }));
+app.set('trust proxy', 1);
 app.use(securityMiddleware.securityHeaders);
 app.use(securityMiddleware.rateLimiter);
 

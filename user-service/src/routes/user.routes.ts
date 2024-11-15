@@ -117,9 +117,16 @@ router.post(
 
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
-    res.json({ message: 'Logout successful' });
+    return res.json({ message: 'Logout successful' });
   })
 );
+
+router.get('/me', requireUser, (req: Request, res: Response) => {
+  res.json({
+    success: true,
+    user: req.user,
+  });
+});
 
 router.post(
   '/addresses',

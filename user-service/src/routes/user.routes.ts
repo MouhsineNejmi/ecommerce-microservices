@@ -123,7 +123,6 @@ router.post(
 
 router.get('/me', requireUser, (req: Request, res: Response) => {
   res.json({
-    success: true,
     user: req.user,
   });
 });

@@ -8,6 +8,7 @@ import express, {
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import 'express-async-errors';
 
 import userRoutes from './routes/user.routes';
@@ -25,6 +26,7 @@ const port = process.env.PORT || 3001;
 const allowedOrigins = process.env.ALLOWED_ORIGINS;
 
 app.use(json());
+app.use(cookieParser());
 app.use(cors({ origin: allowedOrigins?.split(',') }));
 app.set('trust proxy', 1);
 app.use(securityMiddleware.securityHeaders);
@@ -33,7 +35,7 @@ app.use(securityMiddleware.rateLimiter);
 app.use('/api/users', userRoutes);
 
 app.all('*', async (req, res) => {
-  throw new NotFoundError('Route Not Found.');
+  throw new NotFoundError('API Route Not Found.');
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

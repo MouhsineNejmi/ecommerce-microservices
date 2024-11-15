@@ -35,7 +35,8 @@ const loginSchema = z.object({
 
 export const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { login, errors } = useAuthContext();
+  // const { login, errors } = useAuthContext();
+  const { login } = useAuthContext();
   const router = useRouter();
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -97,7 +98,7 @@ export const LoginForm = () => {
                 </FormItem>
               )}
             />
-            {errors}
+            {/* {errors} */}
             <Button type='submit' className='w-full' disabled={isLoading}>
               {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
               Login

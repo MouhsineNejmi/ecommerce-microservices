@@ -27,9 +27,6 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
     return <Loader />;
   }
 
-  console.log('LOADING: ', loading);
-  console.log('USER: ', user);
-
   return (
     <SidebarProvider>
       <AppSidebar />

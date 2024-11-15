@@ -24,6 +24,7 @@ export const useRequest = ({ url, method }: UseRequestProps) => {
         method,
         url,
         data,
+        withCredentials: true,
       });
       return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,7 +33,7 @@ export const useRequest = ({ url, method }: UseRequestProps) => {
         <div className='flex items-center gap-4 bg-red-300 p-2 rounded-md text-sm'>
           <TriangleAlert className='text-red-500' />
           <ul>
-            {err?.response?.data?.errors.map((err: ApiError) => (
+            {err?.response?.data?.errors?.map((err: ApiError) => (
               <li key={err.message}>{err.message}</li>
             ))}
           </ul>

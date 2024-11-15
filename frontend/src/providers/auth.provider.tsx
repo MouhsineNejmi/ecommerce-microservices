@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
-
-import { useRequest } from '@/hooks/use-request';
+import { createContext, useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import { User } from '@/types/user';
+import { useRequest } from '@/hooks/use-request';
 
 interface AuthContextType {
   user: User | null;
@@ -23,22 +22,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [errors, setErrors] = useState<React.ReactNode | null>(null);
 
   useEffect(() => {
-    const loadUser = () => {
+    const fetchUser = async () => {
       try {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        }
+        const { data } = await axios.get('/api/users/me', {
+          withCredentials: true,
+        });
+        setUser(data.user);
+        setLoading(false);
       } catch (error) {
-        console.error('Failed to load user from localStorage:', error);
-        // Clear invalid data
-        localStorage.removeItem('user');
+        console.log('Error fetching user:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const { execute: getMe, errors: getMeErrors } = useRequest({
+    url: '/api/users/me',
+    method: 'get',
+  });
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true);
+
+      try {
+        const data = (await getMe()) as User;
+        setUser(data);
+      } catch (error) {
+        console.error('Failed to load user: ', error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadUser();
+    fetchUser();
   }, []);
 
   const { execute: handleLogin, errors: loginErrors } = useRequest({
@@ -51,7 +70,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (response) {
       setUser(response as User);
-      localStorage.setItem('user', JSON.stringify(response));
     }
   };
 
@@ -65,7 +83,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (response) {
       setUser(response as User);
-      localStorage.setItem('user', JSON.stringify(response));
     }
   };
 
@@ -78,19 +95,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const response = await handleLogout();
     if (response) {
       setUser(null);
-      localStorage.removeItem('user');
     }
   };
 
   useEffect(() => {
-    if (loginErrors || registerErrors || logoutErrors) {
-      setErrors(loginErrors || registerErrors || logoutErrors);
+    if (loginErrors || registerErrors || logoutErrors || getMeErrors) {
+      setErrors(loginErrors || registerErrors || logoutErrors || getMeErrors);
     }
-  }, [loginErrors, logoutErrors, registerErrors]);
+  }, [loginErrors, logoutErrors, registerErrors, getMeErrors]);
 
   return (
     <AuthContext.Provider
-      value={{ user, login, register, logout, loading, errors }}
+      value={{ user, loading, register, login, logout, errors }}
     >
       {children}
     </AuthContext.Provider>

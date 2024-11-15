@@ -16,13 +16,24 @@ spec:
         - name: user
           image: nejmimouhsine1/user-service
           env:
-            - name: ELEVATEX_JWT_KEY
+            - name: JWT_ACCESS_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: elevatex-jwt-secret
-                  key: ELEVATEX_JWT_KEY
+                  name: jwt-secrets
+                  key: JWT_ACCESS_SECRET
+            - name: JWT_REFRESH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secrets
+                  key: JWT_REFRESH_SECRET
             - name: MONGO_URI
               value: 'mongodb://user-mongo-srv:27017/user'
+            - name: ALLOWED_ORIGINS
+              value: 'https://elevatex.dev'
+            - name: REDIS_HOST
+              value: redis-srv
+            - name: REDIS_PORT
+              value: '6379'
 ---
 apiVersion: v1
 kind: Service

@@ -13,17 +13,21 @@ import 'express-async-errors';
 import userRoutes from './routes/user.routes';
 
 import { NotFoundError } from './errors/not-found.error';
-import { errorHandler } from './middlewares/error-handler.middleware';
 import { BadRequestError } from './errors/bad-request.error';
 import { DatabaseConnectionError } from './errors/database-connection.error';
+import { errorHandler } from './middlewares/error-handler.middleware';
+import { securityMiddleware } from './middlewares/security.middleware';
 
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3001;
+const allowedOrigins = process.env.ALLOWED_ORIGINS;
 
 app.use(json());
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: allowedOrigins?.split(',') }));
+app.use(securityMiddleware.securityHeaders);
+app.use(securityMiddleware.rateLimiter);
 
 app.use('/api/users', userRoutes);
 
@@ -36,8 +40,12 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 const start = async () => {
-  if (!process.env.ELEVATEX_JWT_KEY) {
-    throw new BadRequestError('ELEVATEX_JWT_KEY not defined');
+  if (!process.env.JWT_ACCESS_SECRET) {
+    throw new BadRequestError('JWT_ACCESS_SECRET not defined');
+  }
+
+  if (!process.env.JWT_REFRESH_SECRET) {
+    throw new BadRequestError('JWT_ACCESS_SECRET not defined');
   }
 
   if (!process.env.MONGO_URI) {

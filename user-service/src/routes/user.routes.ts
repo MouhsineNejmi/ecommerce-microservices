@@ -1,21 +1,23 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { User } from '../models/user';
 
-import { generateToken } from '../services/jwt';
-import { Password } from '../services/password';
+import { Password } from '../services/password.service';
+import { AuthService } from '../services/auth.service';
 
 import { asyncHandler } from '../middlewares/asyncHandler.middleware';
 import { validate } from '../middlewares/validator.middleware';
+import { requireUser } from '../middlewares/require-user.middleware';
+import { securityMiddleware } from '../middlewares/security.middleware';
 import {
   addressValidation,
   loginValidation,
   registerValidation,
 } from '../validations/user.validation';
+import { setTokenCookies } from '../utils/cookies';
 
 import { ConflictError } from '../errors/conflict.error';
-import { requireUser } from '../middlewares/require-user.middleware';
-import { NotFoundError } from '../errors/not-found.error';
 import { BadRequestError } from '../errors/bad-request.error';
+import { UnauthorizedError } from '../errors/unauthorized.error';
 
 const router = express.Router();
 
@@ -42,14 +44,17 @@ router.post(
       role,
     });
 
-    const token = generateToken(user.id);
+    const tokens = AuthService.generateTokens(user.id, user.role);
+    await AuthService.storeRefreshToken(user.id, tokens.refreshToken);
+
+    setTokenCookies(res, tokens);
 
     return res.status(201).json({
       id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
-      token,
+      accessToken: tokens.accessToken,
     });
   })
 );
@@ -57,23 +62,24 @@ router.post(
 router.post(
   '/login',
   loginValidation,
+  securityMiddleware.loginLimiter,
   validate,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = <{ email: string; password: string }>req.body;
 
     const user = await User.findOne({ email }).select('+password');
+
     if (!user || !(await Password.compare(user.password, password))) {
       throw new BadRequestError('Invalid Credentials');
     }
 
-    const token = generateToken(user.id);
+    const tokens = AuthService.generateTokens(user.id, user.role);
+    await AuthService.storeRefreshToken(user.id, tokens.refreshToken);
+
+    setTokenCookies(res, tokens);
 
     return res.json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      token,
+      accessToken: tokens.accessToken,
     });
   })
 );
@@ -82,26 +88,37 @@ router.post(
   '/refresh-token',
   requireUser,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.user!;
-
-    const user = await User.findById(id);
-    if (!user) {
-      throw new NotFoundError('User not found!');
+    const { refreshToken } = req.cookies;
+    if (!refreshToken) {
+      throw new UnauthorizedError('Refresh token required');
     }
 
-    const token = generateToken(user.id);
+    const decoded = await AuthService.validateRefreshToken(refreshToken);
+    if (!decoded) {
+      throw new UnauthorizedError('Invalid refresh token');
+    }
 
-    res.json({ token });
+    const tokens = AuthService.generateTokens(decoded.userId, decoded.role);
+    await AuthService.storeRefreshToken(decoded.userId, tokens.refreshToken);
+    await AuthService.revokeRefreshToken(refreshToken);
+
+    setTokenCookies(res, tokens);
   })
 );
 
 router.post(
   '/logout',
   requireUser,
-  (req: Request, res: Response, next: NextFunction) => {
-    // To do: Improve auth system and logout
-    res.json({ message: 'Logged out successfully' });
-  }
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { refreshToken } = req.cookies;
+    if (refreshToken) {
+      await AuthService.revokeRefreshToken(refreshToken);
+    }
+
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    res.json({ message: 'Logout successful' });
+  })
 );
 
 router.post(

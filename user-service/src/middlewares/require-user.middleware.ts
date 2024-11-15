@@ -2,8 +2,12 @@ import { NextFunction, Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 
 import { User, UserDocument } from '../models/user';
+import { asyncHandler } from './asyncHandler.middleware';
+
 import { UnauthorizedError } from '../errors/unauthorized.error';
-import { BadRequestError } from '../errors/bad-request.error';
+import { AuthService } from '../services/auth.service';
+import config from '../config';
+import { JWTPayload } from '../types/jwt.types';
 
 declare global {
   namespace Express {
@@ -13,36 +17,27 @@ declare global {
   }
 }
 
-export const requireUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const token = req.headers.authorization?.split(' ')[1];
+export const requireUser = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const token = AuthService.extractToken(req);
 
-  if (!token) {
-    throw new UnauthorizedError('You are not logged in!');
-  }
+    if (!token) {
+      throw new UnauthorizedError('You are not logged in!');
+    }
 
-  try {
-    const decoded = verify(token, process.env.ELEVATEX_JWT_KEY!) as {
-      id: string;
-    };
+    const decoded = verify(
+      token,
+      config.jwt.accessToken.secret as string
+    ) as JWTPayload;
 
-    const user = await User.findById(decoded.id).select('-password');
+    const user = await User.findById(decoded.userId).select('-password');
 
     if (!user) {
-      throw new UnauthorizedError('Invalid user');
+      throw new UnauthorizedError('User not found');
     }
 
     req.user = user;
 
     next();
-  } catch (err) {
-    if (err instanceof Error && err.message) {
-      throw new UnauthorizedError(err.message);
-    }
-
-    throw new BadRequestError('Something went wrong');
   }
-};
+);

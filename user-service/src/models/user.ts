@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { Password } from '../services/password';
+import { Password } from '../services/password.service';
 
-enum UserRole {
+export enum UserRole {
   user,
   admin,
 }

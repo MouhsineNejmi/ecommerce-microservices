@@ -53,6 +53,7 @@ build:
 manifests:
   rawYaml:
     - infra/k8s/ingress-srv.yaml
+    - infra/k8s/redis-depl.yaml
     - infra/k8s/user-depl.yaml
     - infra/k8s/user-mongo.yaml
     - infra/k8s/frontend-depl.yaml

@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -36,7 +36,6 @@ const loginSchema = z.object({
 export const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login, errors } = useAuthContext();
-  const router = useRouter();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -49,9 +48,7 @@ export const LoginForm = () => {
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     try {
       setIsLoading(true);
-      const res = await login(values.email, values.password);
-      console.log('RES: ', res);
-      // router.push('/');
+      await login(values.email, values.password);
     } finally {
       setIsLoading(false);
     }

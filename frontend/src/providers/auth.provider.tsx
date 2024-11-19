@@ -3,6 +3,7 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { User } from '@/types/user';
 import { useRequest } from '@/hooks/use-request';
+import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -19,6 +20,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<React.ReactNode | null>(null);
+  const router = useRouter();
 
   const { execute: getMe } = useRequest({
     url: '/api/users/me',
@@ -52,6 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (response) {
       setUser(response as User);
+      router.push('/');
     }
   };
 
@@ -65,6 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (response) {
       setUser(response as User);
+      router.push('/');
     }
   };
 

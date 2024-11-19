@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -41,7 +40,6 @@ const registerSchema = z.object({
 export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { register, errors } = useAuthContext();
-  const router = useRouter();
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -55,15 +53,7 @@ export function RegisterForm() {
   async function onSubmit(values: z.infer<typeof registerSchema>) {
     try {
       setIsLoading(true);
-      const response = await register(
-        values.name,
-        values.email,
-        values.password
-      );
-
-      console.log('REGISTER RESPONSE: ', response);
-
-      router.push('/');
+      await register(values.name, values.email, values.password);
     } finally {
       setIsLoading(false);
     }

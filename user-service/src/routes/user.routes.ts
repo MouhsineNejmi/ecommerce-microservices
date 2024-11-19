@@ -12,7 +12,7 @@ import { User } from '../models/user';
 import { Password } from '../services/password.service';
 import { AuthService } from '../services/auth.service';
 
-import { requireUser } from '../middlewares/require-user.middleware';
+import { currentUser, requireAuth } from '@elevatex/common';
 
 import {
   addressValidation,
@@ -64,8 +64,8 @@ router.post(
 router.post(
   '/login',
   loginValidation,
-  securityMiddleware.loginLimiter,
   validate,
+  securityMiddleware.loginLimiter,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = <{ email: string; password: string }>req.body;
 
@@ -86,9 +86,11 @@ router.post(
   })
 );
 
+router.use(currentUser);
+
 router.post(
   '/refresh-token',
-  requireUser,
+  requireAuth,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { refreshToken } = req.cookies;
     if (!refreshToken) {
@@ -100,17 +102,21 @@ router.post(
       throw new UnauthorizedError('Invalid refresh token');
     }
 
-    const tokens = AuthService.generateTokens(decoded.userId, decoded.role);
-    await AuthService.storeRefreshToken(decoded.userId, tokens.refreshToken);
+    const tokens = AuthService.generateTokens(decoded.id, decoded.role);
+    await AuthService.storeRefreshToken(decoded.id, tokens.refreshToken);
     await AuthService.revokeRefreshToken(refreshToken);
 
     setTokenCookies(res, tokens);
+
+    return res.json({
+      accessToken: tokens.accessToken,
+    });
   })
 );
 
 router.post(
   '/logout',
-  requireUser,
+  requireAuth,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { refreshToken } = req.cookies;
     if (refreshToken) {
@@ -123,7 +129,7 @@ router.post(
   })
 );
 
-router.get('/me', requireUser, (req: Request, res: Response) => {
+router.get('/me', requireAuth, (req: Request, res: Response) => {
   res.json({
     user: req.user,
   });
@@ -131,7 +137,7 @@ router.get('/me', requireUser, (req: Request, res: Response) => {
 
 router.post(
   '/addresses',
-  requireUser,
+  requireAuth,
   addressValidation,
   validate,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {

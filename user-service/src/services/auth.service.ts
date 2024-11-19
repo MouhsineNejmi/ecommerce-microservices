@@ -8,9 +8,9 @@ import { JWTPayload } from '../types/jwt.types';
 import { UserRole } from '../models/user';
 
 export class AuthService {
-  static generateTokens(userId: string, role: UserRole) {
+  static generateTokens(id: string, role: UserRole) {
     const accessToken = jwt.sign(
-      { userId, role },
+      { id, role },
       config.jwt.accessToken.secret as string,
       {
         expiresIn: config.jwt.accessToken.expiresIn,
@@ -18,7 +18,7 @@ export class AuthService {
     );
 
     const refreshToken = jwt.sign(
-      { userId, role },
+      { id, role },
       config.jwt.refreshToken.secret as string,
       { expiresIn: config.jwt.refreshToken.expiresIn }
     );
@@ -26,19 +26,14 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  static async storeRefreshToken(userId: string, refreshToken: string) {
+  static async storeRefreshToken(id: string, refreshToken: string) {
     try {
       const tokenHash = crypto
         .createHash('sha256')
         .update(refreshToken)
         .digest('hex');
 
-      await redis.set(
-        `refresh_token:${tokenHash}`,
-        userId,
-        'EX',
-        7 * 24 * 60 * 60
-      );
+      await redis.set(`refresh_token:${tokenHash}`, id, 'EX', 7 * 24 * 60 * 60);
     } catch (error) {
       console.error('ERROR STORING TOKEN INSIDE REDIS: ', error);
     }
@@ -59,13 +54,15 @@ export class AuthService {
         refreshToken,
         config.jwt.refreshToken.secret as string
       ) as JWTPayload;
+
       const tokenHash = crypto
         .createHash('sha256')
         .update(refreshToken)
         .digest('hex');
 
       const storedUserId = await redis.get(`refresh_token:${tokenHash}`);
-      return storedUserId === decoded.userId ? decoded : null;
+
+      return storedUserId === decoded.id ? decoded : null;
     } catch (error) {
       return null;
     }

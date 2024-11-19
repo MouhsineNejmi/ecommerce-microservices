@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<React.ReactNode | null>(null);
 
-  const { execute: getMe, errors: getMeErrors } = useRequest({
+  const { execute: getMe } = useRequest({
     url: '/api/users/me',
     method: 'get',
   });
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     fetchUser();
-  }, [getMe]);
+  }, []);
 
   const { execute: handleLogin, errors: loginErrors } = useRequest({
     url: '/api/users/login',
@@ -81,10 +81,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    if (loginErrors || registerErrors || logoutErrors || getMeErrors) {
-      setErrors(loginErrors || registerErrors || logoutErrors || getMeErrors);
+    if (loginErrors || registerErrors || logoutErrors) {
+      setErrors(loginErrors || registerErrors || logoutErrors);
     }
-  }, [loginErrors, logoutErrors, registerErrors, getMeErrors]);
+  }, [loginErrors, logoutErrors, registerErrors]);
 
   return (
     <AuthContext.Provider

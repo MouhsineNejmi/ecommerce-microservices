@@ -1,23 +1,25 @@
 import express, { NextFunction, Request, Response } from 'express';
+import {
+  asyncHandler,
+  validate,
+  securityMiddleware,
+  ConflictError,
+  BadRequestError,
+  UnauthorizedError,
+} from '@elevatex/common';
 import { User } from '../models/user';
 
 import { Password } from '../services/password.service';
 import { AuthService } from '../services/auth.service';
 
-import { asyncHandler } from '../middlewares/asyncHandler.middleware';
-import { validate } from '../middlewares/validator.middleware';
 import { requireUser } from '../middlewares/require-user.middleware';
-import { securityMiddleware } from '../middlewares/security.middleware';
+
 import {
   addressValidation,
   loginValidation,
   registerValidation,
 } from '../validations/user.validation';
 import { setTokenCookies } from '../utils/cookies';
-
-import { ConflictError } from '../errors/conflict.error';
-import { BadRequestError } from '../errors/bad-request.error';
-import { UnauthorizedError } from '../errors/unauthorized.error';
 
 const router = express.Router();
 

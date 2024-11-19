@@ -13,11 +13,13 @@ import 'express-async-errors';
 
 import userRoutes from './routes/user.routes';
 
-import { NotFoundError } from './errors/not-found.error';
-import { BadRequestError } from './errors/bad-request.error';
-import { DatabaseConnectionError } from './errors/database-connection.error';
-import { errorHandler } from './middlewares/error-handler.middleware';
-import { securityMiddleware } from './middlewares/security.middleware';
+import {
+  errorHandler,
+  NotFoundError,
+  BadRequestError,
+  DatabaseConnectionError,
+  securityMiddleware,
+} from '@elevatex/common';
 
 dotenv.config();
 

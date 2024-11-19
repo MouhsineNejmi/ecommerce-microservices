@@ -14,46 +14,15 @@ build:
       context: user-service
       docker:
         dockerfile: Dockerfile
-      # sync:
-      #   manual:
-      #     - src: 'src/**/*.ts'
-      #       dest: .
-    # - image: nejmimouhsine1/product-service
-    #   context: product-service
-    #   docker:
-    #     dockerfile: Dockerfile
-    #   sync:
-    #     manual:
-    #       - src: 'src/**/*.ts'
-    #         dest: .
-    # - image: nejmimouhsine1/cart-service
-    #   context: shopping-cart-service
-    #   docker:
-    #     dockerfile: Dockerfile
-    #   sync:
-    #     manual:
-    #       - src: 'src/**/*.ts'
-    #         dest: .
-    # - image: nejmimouhsine1/order-service
-    #   context: order-service
-    #   docker:
-    #     dockerfile: Dockerfile
-    #   sync:
-    #     manual:
-    #       - src: 'src/**/*.ts'
-    #         dest: .
-    # - image: nejmimouhsine1/payment-service
-    #   context: payment-service
-    #   docker:
-    #     dockerfile: Dockerfile
-    #   sync:
-    #     manual:
-    #       - src: 'src/**/*.ts'
-    #         dest: .
+    - image: nejmimouhsine1/listings-service
+      context: listings-service
+      docker:
+        dockerfile: Dockerfile
 manifests:
   rawYaml:
     - infra/k8s/ingress-srv.yaml
+    - infra/k8s/frontend-depl.yaml
     - infra/k8s/redis-depl.yaml
     - infra/k8s/user-depl.yaml
     - infra/k8s/user-mongo.yaml
-    - infra/k8s/frontend-depl.yaml
+    - infra/k8s/listings-depl.yaml

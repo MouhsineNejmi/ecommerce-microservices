@@ -1,10 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
+import { asyncHandler, UnauthorizedError } from '@elevatex/common';
 
 import { User, UserDocument } from '../models/user';
-import { asyncHandler } from './asyncHandler.middleware';
 
-import { UnauthorizedError } from '../errors/unauthorized.error';
 import { AuthService } from '../services/auth.service';
 import config from '../config';
 import { JWTPayload } from '../types/jwt.types';

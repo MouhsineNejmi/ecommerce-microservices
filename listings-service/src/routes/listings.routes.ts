@@ -11,7 +11,7 @@ import {
   createListingValidation,
   updateListingValidation,
 } from '../validations/listing.validation';
-import { Listing } from '../models/listings';
+import { Listing, ListingAttrs } from '../models/listings';
 
 const router = express.Router();
 
@@ -53,7 +53,7 @@ router.get(
       pagination: {
         currentPage: Number(page),
         totalPages: Math.ceil(total / Number(limit)),
-        totalListings: total,
+        total,
       },
     });
   })
@@ -78,7 +78,7 @@ router.post(
   createListingValidation,
   validate,
   asyncHandler(async (req: Request, res: Response) => {
-    const listingData = {
+    const listingData: ListingAttrs = {
       ...req.body,
       host: req.user!.id,
       status: 'draft',

@@ -19,7 +19,7 @@ interface ListingImage {
   caption: string;
 }
 
-interface ListingAttrs {
+export interface ListingAttrs {
   title: string;
   description: string;
   location: ListingLocation;

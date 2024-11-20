@@ -26,3 +26,4 @@ manifests:
     - infra/k8s/user-depl.yaml
     - infra/k8s/user-mongo.yaml
     - infra/k8s/listings-depl.yaml
+    - infra/k8s/listings-mongo.yaml

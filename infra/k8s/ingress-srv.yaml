@@ -18,33 +18,12 @@ spec:
                 port:
                   number: 3001
           - pathType: ImplementationSpecific
-            path: '/api/products/?(.*)'
+            path: '/api/listings/?(.*)'
             backend:
               service:
-                name: product-srv
+                name: listings-srv
                 port:
                   number: 3002
-          - pathType: ImplementationSpecific
-            path: '/api/cart/?(.*)'
-            backend:
-              service:
-                name: cart-srv
-                port:
-                  number: 3003
-          - pathType: ImplementationSpecific
-            path: '/api/orders/?(.*)'
-            backend:
-              service:
-                name: order-srv
-                port:
-                  number: 3004
-          - pathType: ImplementationSpecific
-            path: '/api/payments/?(.*)'
-            backend:
-              service:
-                name: payment-srv
-                port:
-                  number: 3005
           - pathType: ImplementationSpecific
             path: '/?(.*)'
             backend:

@@ -1,6 +1,6 @@
 import { UserRole } from '../models/user';
 
 export interface JWTPayload {
-  userId: string;
+  id: string;
   role: UserRole;
 }

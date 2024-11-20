@@ -119,4 +119,21 @@ router.put(
   })
 );
 
+router.delete(
+  '/:id',
+  requireAuth,
+  asyncHandler(async (req: Request, res: Response) => {
+    const listing = await Listing.findOneAndDelete({
+      id: req.params.id,
+      host: req.user!.id,
+    });
+
+    if (!listing) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+
+    return res.status(200).json({ message: 'Listing deleted successfully' });
+  })
+);
+
 export default router;

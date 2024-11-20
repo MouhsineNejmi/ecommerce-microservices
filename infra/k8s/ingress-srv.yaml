@@ -11,6 +11,13 @@ spec:
       http:
         paths:
           - pathType: ImplementationSpecific
+            path: '/?(.*)'
+            backend:
+              service:
+                name: frontend-srv
+                port:
+                  number: 3000
+          - pathType: ImplementationSpecific
             path: '/api/users/?(.*)'
             backend:
               service:
@@ -25,9 +32,9 @@ spec:
                 port:
                   number: 3002
           - pathType: ImplementationSpecific
-            path: '/?(.*)'
+            path: '/api/reservations/?(.*)'
             backend:
               service:
-                name: frontend-srv
+                name: reservations-srv
                 port:
-                  number: 3000
+                  number: 3003

@@ -18,6 +18,10 @@ build:
       context: listings-service
       docker:
         dockerfile: Dockerfile
+    - image: nejmimouhsine1/reservations-service
+      context: reservations-service
+      docker:
+        dockerfile: Dockerfile
 manifests:
   rawYaml:
     - infra/k8s/ingress-srv.yaml
@@ -27,3 +31,5 @@ manifests:
     - infra/k8s/user-mongo.yaml
     - infra/k8s/listings-depl.yaml
     - infra/k8s/listings-mongo.yaml
+    - infra/k8s/reservations-depl.yaml
+    - infra/k8s/reservations-mongo.yaml

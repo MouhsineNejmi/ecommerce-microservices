@@ -43,7 +43,7 @@ export interface ListingDocument extends mongoose.Document {
   images: ListingImage[];
   amenities: mongoose.Schema.Types.ObjectId[];
   host: mongoose.Schema.Types.ObjectId;
-  status: 'active' | 'inactive' | 'pending' | 'rejected';
+  status: 'draft' | 'published' | 'archived';
   category: mongoose.Schema.Types.ObjectId;
 }
 

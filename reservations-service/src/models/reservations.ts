@@ -1,20 +1,20 @@
 import mongoose, { Schema } from 'mongoose';
 
 interface ReservationAttrs {
-  listingId: string;
-  userId: string;
+  listingId: mongoose.Schema.Types.ObjectId;
+  userId: mongoose.Schema.Types.ObjectId;
   startTime: Date;
   endTime: Date;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  status?: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   price: number;
 }
 
 interface ReservationDoc extends mongoose.Document {
-  listingId: string;
-  userId: string;
+  listingId: mongoose.Schema.Types.ObjectId;
+  userId: mongoose.Schema.Types.ObjectId;
   startTime: Date;
   endTime: Date;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  status?: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   price: number;
 }
 
@@ -42,7 +42,6 @@ const reservationSchema = new Schema(
     },
     status: {
       type: String,
-      required: true,
       enum: ['pending', 'confirmed', 'cancelled', 'completed'],
       default: 'pending',
     },

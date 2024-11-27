@@ -3,7 +3,10 @@ import mongoose from 'mongoose';
 
 import { asyncHandler } from '../utils/async-handler';
 import { Amenity } from '../models/amenity';
-import { validateCategoryAmenity } from '../validations/category-amenity.validation';
+import {
+  createCategoryAmenity,
+  updateCategoryAmenity,
+} from '../validations/category-amenity.validation';
 import { requireAuth } from '../middlewares/require-auth.middleware';
 import { requireAdmin } from '../middlewares/require-admin.middleware';
 import { validate } from '../middlewares/validator.middleware';
@@ -51,7 +54,9 @@ router.get(
 
 router.post(
   '/',
-  validateCategoryAmenity,
+  requireAuth,
+  requireAdmin,
+  createCategoryAmenity,
   validate,
   asyncHandler(async (req: Request, res: Response) => {
     const { name, icon } = req.body;
@@ -71,6 +76,31 @@ router.post(
     return res.status(201).json({
       data: amenity,
     });
+  })
+);
+
+router.put(
+  '/:id',
+  requireAuth,
+  requireAdmin,
+  updateCategoryAmenity,
+  validate,
+  asyncHandler(async (req: Request, res: Response) => {
+    const amenity = await Amenity.findById(req.params.id);
+
+    if (!amenity) {
+      throw new NotFoundError('Amenity not found');
+    }
+
+    const { name, icon } = req.body;
+
+    Object.keys({ name, icon }).forEach((key) => {
+      amenity.set(key, req.body[key]);
+    });
+
+    await amenity.save();
+
+    return res.status(200).json({ data: amenity });
   })
 );
 

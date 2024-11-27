@@ -3,7 +3,10 @@ import mongoose from 'mongoose';
 
 import { asyncHandler } from '../utils/async-handler';
 import { Category } from '../models/category';
-import { validateCategoryAmenity } from '../validations/category-amenity.validation';
+import {
+  createCategoryAmenity,
+  updateCategoryAmenity,
+} from '../validations/category-amenity.validation';
 import { requireAuth } from '../middlewares/require-auth.middleware';
 import { requireAdmin } from '../middlewares/require-admin.middleware';
 import { validate } from '../middlewares/validator.middleware';
@@ -51,7 +54,9 @@ router.get(
 
 router.post(
   '/',
-  validateCategoryAmenity,
+  requireAuth,
+  requireAdmin,
+  createCategoryAmenity,
   validate,
   asyncHandler(async (req: Request, res: Response) => {
     const { name, icon } = req.body;
@@ -71,6 +76,31 @@ router.post(
     return res.status(201).json({
       data: category,
     });
+  })
+);
+
+router.put(
+  '/:id',
+  requireAuth,
+  requireAdmin,
+  updateCategoryAmenity,
+  validate,
+  asyncHandler(async (req: Request, res: Response) => {
+    const category = await Category.findById(req.params.id);
+
+    if (!category) {
+      throw new NotFoundError('Category not found');
+    }
+
+    const { name, icon } = req.body;
+
+    Object.keys({ name, icon }).forEach((key) => {
+      category.set(key, req.body[key]);
+    });
+
+    await category.save();
+
+    return res.status(200).json({ data: category });
   })
 );
 

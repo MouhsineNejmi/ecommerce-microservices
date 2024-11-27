@@ -1,6 +1,6 @@
-enum UserRole {
-  admin = 'admin',
-  user = 'user',
+export enum UserRole {
+  ADMIN = 'admin',
+  USER = 'user',
 }
 
 export interface User {
@@ -8,7 +8,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
-  token: string;
+  token?: string;
 }
 
 export interface AuthResponse {

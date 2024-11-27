@@ -1,6 +1,8 @@
-import axios from 'axios';
-import { TriangleAlert } from 'lucide-react';
 import { useState } from 'react';
+import axios, { AxiosError } from 'axios';
+import { TriangleAlert } from 'lucide-react';
+
+const API_BASE_URL = 'http://localhost:4000';
 
 interface UseRequestProps {
   url: string;
@@ -22,21 +24,30 @@ export const useRequest = ({ url, method }: UseRequestProps) => {
       setErrors(null);
       const response = await axios<T>({
         method,
-        url,
+        url: `${API_BASE_URL}${url}`,
         data,
         withCredentials: true,
       });
       return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
+      if (err instanceof AxiosError) {
+        setErrors(
+          <div className='flex items-center gap-4 bg-red-300 p-2 rounded-md text-sm'>
+            <TriangleAlert className='text-red-500' />
+            <ul>
+              {err?.response?.data?.errors?.map((err: ApiError) => (
+                <li key={err.message}>{err.message}</li>
+              ))}
+            </ul>
+          </div>
+        );
+      }
+
       setErrors(
-        <div className='flex items-center gap-4 bg-red-300 p-2 rounded-md text-sm'>
+        <div className='flex items-center gap-4 bg-red-300 text-red-500 p-2 rounded-md text-sm'>
           <TriangleAlert className='text-red-500' />
-          <ul>
-            {err?.response?.data?.errors?.map((err: ApiError) => (
-              <li key={err.message}>{err.message}</li>
-            ))}
-          </ul>
+          <p>Something went wrong! Please try again later.</p>
         </div>
       );
     } finally {

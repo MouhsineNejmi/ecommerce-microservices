@@ -24,11 +24,11 @@ export const currentUser = (
 ) => {
   const authHeader = req.headers.authorization;
 
-  if (authHeader && !authHeader.startsWith('Bearer ')) {
-    next();
-  }
-
-  if (!req.cookies || !req.cookies.accessToken) {
+  if (
+    (authHeader && !authHeader.startsWith('Bearer ')) ||
+    !req.cookies ||
+    !req.cookies.accessToken
+  ) {
     next();
   }
 

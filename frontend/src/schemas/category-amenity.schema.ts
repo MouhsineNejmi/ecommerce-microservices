@@ -12,8 +12,7 @@ export const CategoryAmenitySchema = z.object({
   icon: z
     .string()
     .trim()
-    .min(2, { message: 'Icon must be between 2 and 50 characters' })
-    .max(50, { message: 'Icon must be between 2 and 50 characters' }),
+    .min(2, { message: 'Icon must be at least 2 characters' }),
 });
 
 export type CategoryAmenityType = z.infer<typeof CategoryAmenitySchema>;

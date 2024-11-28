@@ -1,7 +1,9 @@
 import express, { Request, Response } from 'express';
+import { Listing, ListingAttrs } from '../models/listings';
 import { asyncHandler } from '../utils/async-handler';
 import { requireAuth } from '../middlewares/require-auth.middleware';
 import { validate } from '../middlewares/validator.middleware';
+import { currentUser } from '../middlewares/current-user.middleware';
 
 import { NotFoundError, UnauthorizedError } from '../errors';
 
@@ -9,7 +11,6 @@ import {
   createListingValidation,
   updateListingValidation,
 } from '../validations/listing.validation';
-import { Listing, ListingAttrs } from '../models/listings';
 
 const router = express.Router();
 
@@ -73,6 +74,8 @@ router.get(
     return res.status(200).json({ data: listing });
   })
 );
+
+router.use(currentUser);
 
 router.post(
   '/',

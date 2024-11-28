@@ -3,6 +3,7 @@ import { Request, Response, Router } from 'express';
 import { asyncHandler } from '../utils/async-handler';
 import { requireAuth } from '../middlewares/require-auth.middleware';
 import { validate } from '../middlewares/validator.middleware';
+import { currentUser } from '../middlewares/current-user.middleware';
 import { BadRequestError, NotFoundError, UnauthorizedError } from '../errors';
 import PaymentService from '../services/payment.service';
 import config from '../config';
@@ -79,6 +80,8 @@ router.get(
     });
   })
 );
+
+router.use(currentUser);
 
 router.post(
   '/',

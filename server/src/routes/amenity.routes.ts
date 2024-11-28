@@ -10,9 +10,12 @@ import {
 import { requireAuth } from '../middlewares/require-auth.middleware';
 import { requireAdmin } from '../middlewares/require-admin.middleware';
 import { validate } from '../middlewares/validator.middleware';
+import { currentUser } from '../middlewares/current-user.middleware';
 import { ConflictError, NotFoundError } from '../errors';
 
 const router = Router();
+
+router.use(currentUser);
 
 router.get(
   '/',
@@ -44,11 +47,24 @@ router.get(
     return res.json({
       data: amenities,
       pagination: {
-        currentPage: page,
+        currentPage: Number(page),
         totalPages: Math.ceil(Number(total) / Number(limit)),
         total,
       },
     });
+  })
+);
+
+router.get(
+  '/:id',
+  asyncHandler(async (req: Request, res: Response) => {
+    const amenity = await Amenity.findById(req.params.id);
+
+    if (!amenity) {
+      throw new NotFoundError('Amenity not found');
+    }
+
+    return res.json({ data: amenity });
   })
 );
 
@@ -109,7 +125,7 @@ router.delete(
   requireAuth,
   requireAdmin,
   asyncHandler(async (req: Request, res: Response) => {
-    const amenity = await Amenity.findOneAndDelete({ id: req.params.id });
+    const amenity = await Amenity.findByIdAndDelete(req.params.id);
 
     if (!amenity) {
       throw new NotFoundError('Amenity not found');

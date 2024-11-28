@@ -37,7 +37,7 @@ const registerSchema = z.object({
     ),
 });
 
-export function RegisterForm() {
+export const RegisterForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { register, errors } = useAuthContext();
 
@@ -50,14 +50,14 @@ export function RegisterForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof registerSchema>) {
+  const onSubmit = async (values: z.infer<typeof registerSchema>) => {
     try {
       setIsLoading(true);
       await register(values.name, values.email, values.password);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Card className='w-[350px]'>
@@ -121,4 +121,4 @@ export function RegisterForm() {
       </CardContent>
     </Card>
   );
-}
+};

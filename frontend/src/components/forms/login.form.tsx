@@ -45,14 +45,14 @@ export const LoginForm = () => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof loginSchema>) {
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
       setIsLoading(true);
       await login(values.email, values.password);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Card className='w-[350px]'>

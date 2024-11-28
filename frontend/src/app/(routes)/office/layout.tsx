@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { DashboardSidebar } from '@/components/dashboard-sidebar';
-import Loader from '@/components/loader';
+import { Loader } from '@/components/loader';
 
 import { useAuthContext } from '@/providers/auth.provider';
 import { Button } from '@/components/ui/button';

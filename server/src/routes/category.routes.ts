@@ -7,12 +7,15 @@ import {
   createCategoryAmenity,
   updateCategoryAmenity,
 } from '../validations/category-amenity.validation';
+import { currentUser } from '../middlewares/current-user.middleware';
 import { requireAuth } from '../middlewares/require-auth.middleware';
 import { requireAdmin } from '../middlewares/require-admin.middleware';
 import { validate } from '../middlewares/validator.middleware';
 import { ConflictError, NotFoundError } from '../errors';
 
 const router = Router();
+
+router.use(currentUser);
 
 router.get(
   '/',
@@ -44,11 +47,24 @@ router.get(
     return res.json({
       data: categories,
       pagination: {
-        currentPage: page,
+        currentPage: Number(page),
         totalPages: Math.ceil(Number(total) / Number(limit)),
-        totalItems: total,
+        total: total,
       },
     });
+  })
+);
+
+router.get(
+  '/:id',
+  asyncHandler(async (req: Request, res: Response) => {
+    const category = await Category.findById(req.params.id);
+
+    if (!category) {
+      throw new NotFoundError('Category not found');
+    }
+
+    return res.json({ data: category });
   })
 );
 
@@ -109,7 +125,7 @@ router.delete(
   requireAuth,
   requireAdmin,
   asyncHandler(async (req: Request, res: Response) => {
-    const category = await Category.findOneAndDelete({ id: req.params.id });
+    const category = await Category.findByIdAndDelete(req.params.id);
 
     if (!category) {
       throw new NotFoundError('Category not found');

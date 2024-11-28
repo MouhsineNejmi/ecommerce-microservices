@@ -31,7 +31,7 @@ import {
 
 import { User } from '@/types/user';
 
-export function NavUser({ user }: { user: User }) {
+export const NavUser = ({ user }: { user: User }) => {
   const { isMobile } = useSidebar();
 
   return (
@@ -100,4 +100,4 @@ export function NavUser({ user }: { user: User }) {
       </SidebarMenuItem>
     </SidebarMenu>
   );
-}
+};

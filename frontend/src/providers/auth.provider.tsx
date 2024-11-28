@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   const login = async (email: string, password: string) => {
-    const response = await handleLogin<User>({ email, password });
+    const response = await handleLogin<User>({ data: { email, password } });
 
     if (response) {
       setUser(response as User);
@@ -64,7 +64,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   const register = async (name: string, email: string, password: string) => {
-    const response = await handleRegister<User>({ name, email, password });
+    const response = await handleRegister<User>({
+      data: { name, email, password },
+    });
 
     if (response) {
       setUser(response as User);

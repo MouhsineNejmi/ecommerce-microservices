@@ -18,14 +18,22 @@ export const useRequest = ({ url, method }: UseRequestProps) => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<React.ReactNode | null>(null);
 
-  const execute = async <T,>(data?: unknown): Promise<T | React.ReactNode> => {
+  const execute = async <T,>(params?: {
+    urlParams?: string;
+    data?: unknown;
+  }): Promise<T | React.ReactNode> => {
     try {
       setLoading(true);
       setErrors(null);
+
+      const dynamicUrl = `${API_BASE_URL}${url}${
+        params?.urlParams ? `/${params.urlParams}` : ''
+      }`;
+
       const response = await axios<T>({
         method,
-        url: `${API_BASE_URL}${url}`,
-        data,
+        url: dynamicUrl,
+        data: params?.data,
         withCredentials: true,
       });
       return response.data;

@@ -1,6 +1,6 @@
 import { Loader2 } from 'lucide-react';
 
-const Loader = () => {
+export const Loader = () => {
   return (
     <div className='flex items-center justify-center h-screen bg-background'>
       <div className='text-center'>
@@ -12,5 +12,3 @@ const Loader = () => {
     </div>
   );
 };
-
-export default Loader;

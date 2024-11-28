@@ -119,6 +119,7 @@ export const CategoriesTable = ({
               onClick={() =>
                 router.push(`/office/categories/${row.original.id}`)
               }
+              disabled={isDeletingCategory}
             >
               <Pencil />
             </Button>
@@ -127,6 +128,7 @@ export const CategoriesTable = ({
               variant='destructive'
               size='sm'
               onClick={() => handleDelete(row.original.id!)}
+              disabled={isDeletingCategory}
             >
               <Trash />
             </Button>
@@ -134,7 +136,7 @@ export const CategoriesTable = ({
         ),
       }),
     ],
-    []
+    [isDeletingCategory, router, columnHelper]
   );
 
   const table = useReactTable({

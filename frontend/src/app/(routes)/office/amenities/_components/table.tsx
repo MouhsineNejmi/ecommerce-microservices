@@ -129,7 +129,7 @@ export const AmenitiesTable = ({
         ),
       }),
     ],
-    []
+    [isDeletingAmenity, router, columnHelper]
   );
 
   const table = useReactTable({

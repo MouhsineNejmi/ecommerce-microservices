@@ -44,7 +44,8 @@ router.get(
       .limit(Number(limit))
       .skip((Number(page) - 1) * Number(limit))
       .sort({ createdAt: -1 })
-      .populate('amenities', 'icon name');
+      .populate('amenities', 'icon name')
+      .populate('category', 'name');
 
     const total = await Listing.countDocuments(filter);
 
@@ -62,10 +63,9 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
-    const listing = await Listing.findById(req.params.id).populate(
-      'amenities',
-      'icon name'
-    );
+    const listing = await Listing.findById(req.params.id)
+      .populate('amenities', 'icon name')
+      .populate('category', 'name');
 
     if (!listing) {
       throw new NotFoundError('Listing not found');

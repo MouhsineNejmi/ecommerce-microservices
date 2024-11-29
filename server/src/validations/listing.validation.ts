@@ -113,12 +113,6 @@ export const createListingValidation: ValidationChain[] = [
     .custom((value) => mongoose.Types.ObjectId.isValid(value))
     .withMessage('Invalid amenity ID format'),
 
-  body('host')
-    .notEmpty()
-    .withMessage('Host ID is required')
-    .custom((value) => mongoose.Types.ObjectId.isValid(value))
-    .withMessage('Invalid host ID format'),
-
   body('status')
     .optional()
     .isIn(['draft', 'published', 'archived'])

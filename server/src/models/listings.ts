@@ -71,14 +71,20 @@ const listingSchema = new mongoose.Schema(
       serviceFee: { type: Number, default: 0 },
     },
     images: [{ url: String, caption: String }],
-    amenities: [String],
-    host: { type: mongoose.Schema.Types.ObjectId, required: true },
+    amenities: [
+      { type: mongoose.Schema.Types.ObjectId, ref: 'Amenity', required: true },
+    ],
+    host: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     status: {
       type: String,
       enum: ['draft', 'published', 'archived'],
       default: 'draft',
     },
-    category: { type: mongoose.Schema.Types.ObjectId, required: true },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
+    },
     maxGuests: { type: Number, required: true },
     bedrooms: { type: Number, required: true },
     beds: { type: Number, required: true },

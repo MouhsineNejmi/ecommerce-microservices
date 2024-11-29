@@ -1,17 +1,12 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { format } from 'date-fns';
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  Pencil,
-  Trash,
 } from 'lucide-react';
 import {
   useReactTable,
@@ -20,9 +15,9 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   flexRender,
-  createColumnHelper,
   SortingState,
   ColumnFiltersState,
+  ColumnDef,
 } from '@tanstack/react-table';
 import {
   Table,
@@ -34,7 +29,6 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { AlertModal } from '@/components/alert-modal';
 import {
   Select,
   SelectContent,
@@ -43,104 +37,37 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { Category } from '@/types/category';
 import { Pagination } from '@/types/global';
-import { useRequest } from '@/hooks/use-request';
 
-interface CategoryTableProps {
+interface DataTableProps<T> {
   data: {
-    categories: Category[];
+    data: T[];
     pagination: Pagination;
   };
   onPageChange: (
     page: number
-  ) => Promise<{ categories: Category[]; pagination: Pagination }>;
+  ) => Promise<{ data: T[]; pagination: Pagination }>;
   onSearch: (search: string) => Promise<{
-    categories: Category[];
+    data: T[];
     pagination: Pagination;
   }>;
+  columns: ColumnDef<T>[];
 }
 
-export const CategoriesTable = ({
+export const DataTable = <T,>({
   data,
   onPageChange,
   onSearch,
-}: CategoryTableProps) => {
-  const router = useRouter();
+  columns,
+}: DataTableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [categories, setCategories] = useState(data.categories);
+  const [tableData, setTableData] = useState(data.data);
   const [pagination, setPagination] = useState(data.pagination);
   const [search, setSearch] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
-  const { execute: deleteCategory, loading: isDeletingCategory } = useRequest({
-    method: 'delete',
-    url: '/api/categories',
-  });
-
-  const columnHelper = createColumnHelper<Category>();
-
-  const columns = useMemo(
-    () => [
-      columnHelper.accessor('icon', {
-        header: 'Icon',
-        cell: (info) => (
-          <div className='flex items-center'>
-            <Image
-              src={info.getValue()}
-              alt='icon'
-              width={20}
-              height={20}
-              className='mr-2'
-            />
-          </div>
-        ),
-        enableSorting: false,
-      }),
-      columnHelper.accessor('name', {
-        header: 'Name',
-        cell: (info) => info.getValue(),
-        enableSorting: true,
-      }),
-      columnHelper.accessor('createdAt', {
-        header: 'Created At',
-        cell: (info) => format(new Date(info.getValue()), 'MMMM do, yyyy'),
-        sortingFn: 'datetime',
-      }),
-      columnHelper.display({
-        id: 'actions',
-        header: 'Actions',
-        cell: ({ row }) => (
-          <div className='flex space-x-2'>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={() =>
-                router.push(`/office/categories/${row.original.id}`)
-              }
-              disabled={isDeletingCategory}
-            >
-              <Pencil />
-            </Button>
-
-            <Button
-              variant='destructive'
-              size='sm'
-              onClick={() => handleDelete(row.original.id!)}
-              disabled={isDeletingCategory}
-            >
-              <Trash />
-            </Button>
-          </div>
-        ),
-      }),
-    ],
-    [isDeletingCategory, router, columnHelper]
-  );
 
   const table = useReactTable({
-    data: categories,
+    data: tableData,
     columns,
     state: {
       sorting,
@@ -155,16 +82,16 @@ export const CategoriesTable = ({
   });
 
   const handlePageChange = async (page: number) => {
-    const { categories: newCategories, pagination: newPagination } =
-      await onPageChange(page);
-    setCategories(newCategories);
+    const { data: newData, pagination: newPagination } = await onPageChange(
+      page
+    );
+    setTableData(newData);
     setPagination(newPagination);
   };
 
   const debouncedSearch = useDebouncedCallback(async (search: string) => {
-    const { categories: newCategories, pagination: newPagination } =
-      await onSearch(search);
-    setCategories(newCategories);
+    const { data: newData, pagination: newPagination } = await onSearch(search);
+    setTableData(newData);
     setPagination(newPagination);
   }, 500);
 
@@ -173,43 +100,12 @@ export const CategoriesTable = ({
     debouncedSearch(search);
   };
 
-  const handleDelete = (id: string) => {
-    setCategoryToDelete(id);
-    setIsModalOpen(true);
-  };
-
-  const confirmDelete = async () => {
-    if (categoryToDelete) {
-      try {
-        await deleteCategory({ urlParams: categoryToDelete });
-        setCategories((prev) =>
-          prev.filter((cat) => cat.id !== categoryToDelete)
-        );
-      } catch (error) {
-        console.error('Error deleting category:', error);
-      } finally {
-        setIsModalOpen(false);
-        setCategoryToDelete(null);
-      }
-    }
-  };
-
   return (
     <div className='space-y-4'>
-      <AlertModal
-        isOpen={isModalOpen}
-        title='Delete Category'
-        description='Are you sure you want to delete this category? This action cannot be undone.'
-        onConfirm={confirmDelete}
-        onCancel={() => setIsModalOpen(false)}
-        confirmLabel='Delete'
-        cancelLabel='Cancel'
-      />
-
       {/* Global Search Input */}
       <div className='flex items-center justify-between'>
         <Input
-          placeholder='Search categories...'
+          placeholder='Search items...'
           value={search ?? ''}
           onChange={(e) => handleSearch(e.target.value)}
           className='max-w-sm'
@@ -325,4 +221,4 @@ export const CategoriesTable = ({
   );
 };
 
-export default CategoriesTable;
+export default DataTable;

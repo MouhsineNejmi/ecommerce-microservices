@@ -1,15 +1,15 @@
 import { cookies } from 'next/headers';
+// import { redirect } from 'next/navigation';
 
 import { User } from '@/types/user';
+import { ErrorResponse } from '@/types/global';
 
-export async function getCurrentUser(): Promise<{
-  data: User;
-}> {
+export async function getCurrentUser(): Promise<User | ErrorResponse> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
   if (!accessToken) {
-    throw new Error('No authentication token found');
+    return { errors: 'No authentication token found' };
   }
 
   try {
@@ -22,14 +22,16 @@ export async function getCurrentUser(): Promise<{
     });
 
     if (!res.ok) {
-      throw new Error('Failed to fetch current user');
+      const errorData = await res.json();
+      console.log('errorData', errorData);
+      return { errors: errorData.errors };
     }
 
-    const { data } = await res.json();
+    const { data: user } = await res.json();
 
-    return { data };
+    return user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error('Failed to fetch current user: ', error);
-    throw error;
+    return { errors: 'Failed to fetch current user' };
   }
 }

@@ -1,32 +1,21 @@
-'use client';
-
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { DashboardSidebar } from '@/components/dashboard-sidebar';
-import { Loader } from '@/components/loader';
 
-import { useAuthContext } from '@/providers/auth.provider';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
+import { getCurrentUser } from '@/actions/get-current-user';
 
-const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuthContext();
-  const router = useRouter();
+const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
+  const user = await getCurrentUser();
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
+  if (!user || 'errors' in user) {
+    redirect('/login');
+  }
 
-    if (user && user.role && user.role !== 'admin') {
-      router.push('/');
-    }
-  }, [user, loading, router]);
-
-  if (loading || !user) {
-    return <Loader />;
+  if (user && user.role !== 'admin') {
+    redirect('/unauthorized');
   }
 
   return (

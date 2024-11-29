@@ -18,8 +18,6 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { NavUser } from './nav-user';
-import { useAuthContext } from '@/providers/auth.provider';
-import { User } from '@/types/user';
 
 const navItems = [
   {
@@ -52,13 +50,12 @@ const navItems = [
 export const DashboardSidebar = ({
   className,
 }: React.ComponentProps<typeof Sidebar>) => {
-  const { user } = useAuthContext();
   const pathname = usePathname();
 
   return (
     <Sidebar collapsible='icon' className={cn('border-r', className)}>
       <SidebarHeader>
-        <NavUser user={user as User} />
+        <NavUser />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

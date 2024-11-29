@@ -3,7 +3,6 @@ import { Poppins } from 'next/font/google';
 import '../globals.css';
 
 import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/providers/auth.provider';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -23,7 +22,7 @@ const RootLayout = ({
   return (
     <html lang='en'>
       <body className={`${poppins.className}`}>
-        <AuthProvider>{children}</AuthProvider>
+        <>{children}</>
         <Toaster />
       </body>
     </html>

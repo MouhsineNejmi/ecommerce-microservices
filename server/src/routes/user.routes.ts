@@ -46,11 +46,13 @@ router.post(
     setTokenCookies(res, tokens);
 
     return res.status(201).json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      accessToken: tokens.accessToken,
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        accessToken: tokens.accessToken,
+      },
     });
   })
 );
@@ -74,7 +76,13 @@ router.post(
     setTokenCookies(res, tokens);
 
     return res.json({
-      accessToken: tokens.accessToken,
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        accessToken: tokens.accessToken,
+      },
     });
   })
 );
@@ -100,7 +108,9 @@ router.post(
     setTokenCookies(res, tokens);
 
     return res.json({
-      accessToken: tokens.accessToken,
+      data: {
+        accessToken: tokens.accessToken,
+      },
     });
   })
 );
@@ -121,7 +131,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const user = await User.findById(req.user?.id).select('-password');
 
-    return res.json(user);
+    return res.json({ data: user });
   })
 );
 
@@ -138,7 +148,7 @@ router.post(
       { new: true, runValidators: true }
     );
 
-    return res.status(201).json(updatedUser?.addresses);
+    return res.status(201).json({ data: updatedUser?.addresses });
   })
 );
 

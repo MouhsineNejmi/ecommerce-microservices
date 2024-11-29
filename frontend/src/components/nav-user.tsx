@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import {
   BadgeCheck,
   Bell,
@@ -30,9 +31,27 @@ import {
 } from '@/components/ui/sidebar';
 
 import { User } from '@/types/user';
+import { useRequest } from '@/hooks/use-request';
 
-export const NavUser = ({ user }: { user: User }) => {
+export const NavUser = () => {
   const { isMobile } = useSidebar();
+  const [user, setUser] = useState<User | null>(null);
+
+  const { execute: getCurrentUser, loading } = useRequest({
+    url: '/api/users/me',
+    method: 'get',
+  });
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const { data: user } = (await getCurrentUser()) as { data: User };
+      console.log('user', user);
+      setUser(user);
+    };
+    fetchCurrentUser();
+  }, []);
+
+  if (loading) return <h2>Loading...</h2>;
 
   return (
     <SidebarMenu>
@@ -46,12 +65,12 @@ export const NavUser = ({ user }: { user: User }) => {
               <Avatar className='h-8 w-8 rounded-lg'>
                 {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
                 <AvatarFallback className='rounded-lg'>
-                  {user.name.substring(0, 2)}
+                  {user?.name.substring(0, 2)}
                 </AvatarFallback>
               </Avatar>
               <div className='grid flex-1 text-left text-sm leading-tight'>
-                <span className='truncate font-semibold'>{user.name}</span>
-                <span className='truncate text-xs'>{user.email}</span>
+                <span className='truncate font-semibold'>{user?.name}</span>
+                <span className='truncate text-xs'>{user?.email}</span>
               </div>
               <ChevronsUpDown className='ml-auto size-4' />
             </SidebarMenuButton>
@@ -66,12 +85,12 @@ export const NavUser = ({ user }: { user: User }) => {
               <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                 <Avatar className='h-8 w-8 rounded-lg'>
                   <AvatarFallback className='rounded-lg'>
-                    {user.name.substring(0, 2)}
+                    {user?.name.substring(0, 2)}
                   </AvatarFallback>
                 </Avatar>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-semibold'>{user.name}</span>
-                  <span className='truncate text-xs'>{user.email}</span>
+                  <span className='truncate font-semibold'>{user?.name}</span>
+                  <span className='truncate text-xs'>{user?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>

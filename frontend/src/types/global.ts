@@ -3,3 +3,5 @@ export type Pagination = {
   totalPages: number;
   total: number;
 };
+
+export type ErrorResponse = { errors: string | string[] };

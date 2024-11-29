@@ -1,3 +1,7 @@
+import { revalidatePath } from 'next/cache';
+import Link from 'next/link';
+import { Plus } from 'lucide-react';
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -5,8 +9,29 @@ import {
   BreadcrumbList,
 } from '@/components/ui/breadcrumb';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { Heading } from '@/components/ui/heading';
+import { DataTable } from '@/components/data-table';
 
-const ListingsPage = () => {
+import { fetchListings } from '@/actions/fetch-listings';
+import { columns } from './_components/columns';
+
+const ListingsPage = async () => {
+  const { data, pagination } = await fetchListings();
+
+  const handlePageChange = async (page: number) => {
+    'use server';
+    const { data, pagination } = await fetchListings(page);
+    revalidatePath('/office/listings');
+    return { data, pagination };
+  };
+
+  const handleSearch = async (search: string) => {
+    'use server';
+    const { data, pagination } = await fetchListings(1, 10, search);
+    revalidatePath('/office/listings');
+    return { data, pagination };
+  };
+
   return (
     <SidebarProvider>
       <SidebarInset>
@@ -24,7 +49,26 @@ const ListingsPage = () => {
           </div>
         </header>
         <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-          <h2>Listings Client</h2>
+          <div className='flex items-center justify-between'>
+            <Heading
+              title={`Listings(${pagination?.total || 0})`}
+              description='Manage listings for your store'
+            />
+            <Link
+              className='bg-purple-500 text-white text-sm gap-2 flex items-center px-4 py-2 rounded-md hover:bg-purple-600 transition-colors'
+              href='/office/categories/new'
+            >
+              <Plus />
+              New Listing
+            </Link>
+          </div>
+
+          <DataTable
+            data={{ data, pagination }}
+            columns={columns}
+            onPageChange={handlePageChange}
+            onSearch={handleSearch}
+          />
         </div>
       </SidebarInset>
     </SidebarProvider>

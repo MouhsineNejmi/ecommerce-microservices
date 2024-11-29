@@ -10,25 +10,26 @@ import {
 } from '@/components/ui/breadcrumb';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Heading } from '@/components/ui/heading';
-import { AmenitiesTable } from './_components/table';
+import { DataTable } from '@/components/data-table';
+import { columns } from './_components/columns';
 
 import { fetchAmenities } from '@/actions/fetch-amenities';
 
 const AmenitiesPage = async () => {
-  const { data: amenities, pagination } = await fetchAmenities();
+  const { data, pagination } = await fetchAmenities();
 
   const handlePageChange = async (page: number) => {
     'use server';
-    const { data: amenities, pagination } = await fetchAmenities(page);
+    const { data, pagination } = await fetchAmenities(page);
     revalidatePath('/office/amenities');
-    return { amenities, pagination };
+    return { data, pagination };
   };
 
   const handleSearch = async (search: string) => {
     'use server';
-    const { data: amenities, pagination } = await fetchAmenities(1, 10, search);
+    const { data, pagination } = await fetchAmenities(1, 10, search);
     revalidatePath('/office/amenities');
-    return { amenities, pagination };
+    return { data, pagination };
   };
 
   return (
@@ -61,8 +62,9 @@ const AmenitiesPage = async () => {
               New Amenity
             </Link>
           </div>
-          <AmenitiesTable
-            data={{ amenities, pagination }}
+          <DataTable
+            data={{ data, pagination }}
+            columns={columns}
             onPageChange={handlePageChange}
             onSearch={handleSearch}
           />

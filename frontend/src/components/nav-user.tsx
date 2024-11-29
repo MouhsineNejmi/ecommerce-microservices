@@ -45,7 +45,6 @@ export const NavUser = () => {
   useEffect(() => {
     const fetchCurrentUser = async () => {
       const { data: user } = (await getCurrentUser()) as { data: User };
-      console.log('user', user);
       setUser(user);
     };
     fetchCurrentUser();

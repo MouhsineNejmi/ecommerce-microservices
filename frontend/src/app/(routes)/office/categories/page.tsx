@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
 import { Plus } from 'lucide-react';
 
@@ -9,30 +10,26 @@ import {
 } from '@/components/ui/breadcrumb';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Heading } from '@/components/ui/heading';
-import { CategoriesTable } from './_components/table';
+import { DataTable } from '@/components/data-table';
+import { columns } from './_components/columns';
 
 import { fetchCategories } from '@/actions/fetch-categories';
-import Link from 'next/link';
 
 const CategoriesPage = async () => {
-  const { data: categories, pagination } = await fetchCategories();
+  const { data, pagination } = await fetchCategories();
 
   const handlePageChange = async (page: number) => {
     'use server';
-    const { data: categories, pagination } = await fetchCategories(page);
+    const { data, pagination } = await fetchCategories(page);
     revalidatePath('/office/categories');
-    return { categories, pagination };
+    return { data, pagination };
   };
 
   const handleSearch = async (search: string) => {
     'use server';
-    const { data: categories, pagination } = await fetchCategories(
-      1,
-      10,
-      search
-    );
+    const { data, pagination } = await fetchCategories(1, 10, search);
     revalidatePath('/office/categories');
-    return { categories, pagination };
+    return { data, pagination };
   };
 
   return (
@@ -65,8 +62,9 @@ const CategoriesPage = async () => {
               New Category
             </Link>
           </div>
-          <CategoriesTable
-            data={{ categories, pagination }}
+          <DataTable
+            data={{ data, pagination }}
+            columns={columns}
             onPageChange={handlePageChange}
             onSearch={handleSearch}
           />

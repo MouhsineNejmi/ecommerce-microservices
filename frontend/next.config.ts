@@ -3,7 +3,11 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    domains: ['localhost', 'a0.muscache.com'],
+    remotePatterns: [
+      { hostname: 'localhost', protocol: 'http' },
+      { hostname: 'a0.muscache.com', protocol: 'https' },
+      { hostname: 'res.cloudinary.com', protocol: 'https' },
+    ],
   },
 };
 

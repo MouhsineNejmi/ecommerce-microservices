@@ -79,6 +79,7 @@ export const CategoryForm = ({ initialData }: CategoryFormProps) => {
 
       router.push(`/office/categories`);
       toast({ title: toastMessage });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({ title: 'Something went wrong.', variant: 'destructive' });
     }
@@ -89,6 +90,7 @@ export const CategoryForm = ({ initialData }: CategoryFormProps) => {
       await deleteCategory();
       router.push(`/office/categories`);
       toast({ title: 'Category deleted.' });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: 'Something went wrong.',
@@ -146,6 +148,7 @@ export const CategoryForm = ({ initialData }: CategoryFormProps) => {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />

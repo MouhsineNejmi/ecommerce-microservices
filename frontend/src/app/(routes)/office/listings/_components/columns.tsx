@@ -14,7 +14,7 @@ export const columns: ColumnDef<Listing>[] = [
     cell: (info) => (
       <div className='flex items-center'>
         <Image
-          src={info.row.original.images[0].url}
+          src={info.row.original?.images[0]?.url}
           alt='icon'
           width={100}
           height={100}

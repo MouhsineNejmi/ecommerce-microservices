@@ -79,6 +79,7 @@ export const AmenityForm = ({ initialData }: AmenityFormProps) => {
 
       router.push(`/office/amenities`);
       toast({ title: toastMessage });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({ title: 'Something went wrong.', variant: 'destructive' });
     }
@@ -89,6 +90,7 @@ export const AmenityForm = ({ initialData }: AmenityFormProps) => {
       await deleteAmenity();
       router.push(`/office/amenities`);
       toast({ title: 'Amenity deleted.' });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: 'Something went wrong.',
@@ -146,6 +148,7 @@ export const AmenityForm = ({ initialData }: AmenityFormProps) => {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />

@@ -86,7 +86,6 @@ router.post(
     const listingData: ListingAttrs = {
       ...req.body,
       host: req.user!.id,
-      status: 'draft',
     };
 
     const listing = Listing.build(listingData);

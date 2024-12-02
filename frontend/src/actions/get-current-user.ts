@@ -4,7 +4,10 @@ import { cookies } from 'next/headers';
 import { User } from '@/types/user';
 import { ErrorResponse } from '@/types/global';
 
-export async function getCurrentUser(): Promise<User | ErrorResponse> {
+export async function getCurrentUser(): Promise<{
+  data?: User;
+  errors?: ErrorResponse;
+}> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 

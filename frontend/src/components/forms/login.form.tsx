@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-import { login } from '@/actions/auth';
+import { login } from '@/actions/auth.actions';
 
 const INITIAL_STATE = {
   email: '',
@@ -34,7 +34,7 @@ export const LoginForm = () => {
       </CardHeader>
       <CardContent>
         <form action={signInAction} className='flex flex-col gap-4'>
-          {state?.data?.accessToken && (
+          {state?.accessToken && (
             <div className='flex items-center gap-2 bg-green-50 p-2 rounded'>
               <CheckCircle className='h-4 w-4 text-green-500' />
               <p className='text-green-500'>Signed in successfully!</p>

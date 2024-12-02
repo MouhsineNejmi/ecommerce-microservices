@@ -18,11 +18,19 @@ interface ListingImage {
 }
 
 interface Amenities {
+  id: string;
   icon: string;
   name: string;
 }
 
+export enum ListingStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+  ARCHIVED = 'archived',
+}
+
 export interface Listing {
+  id: string;
   title: string;
   description: string;
   location: ListingLocation;
@@ -31,9 +39,14 @@ export interface Listing {
   amenities: Amenities[];
   host: string;
   status: 'draft' | 'published' | 'archived';
-  category: string;
+  category: {
+    name: string;
+    id: string;
+  };
   maxGuests: number;
   bedrooms: number;
   beds: number;
   baths: number;
+  createdAt: string;
+  updatedAt?: string;
 }

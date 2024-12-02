@@ -19,6 +19,12 @@ interface ListingImage {
   caption: string;
 }
 
+enum ListingStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+  ARCHIVED = 'archived',
+}
+
 export interface ListingAttrs {
   title: string;
   description: string;
@@ -27,7 +33,7 @@ export interface ListingAttrs {
   images: ListingImage[];
   amenities: mongoose.Schema.Types.ObjectId[];
   host: mongoose.Schema.Types.ObjectId;
-  status: 'draft' | 'published' | 'archived';
+  status: ListingStatus;
   category: mongoose.Schema.Types.ObjectId;
   maxGuests: number;
   bedrooms: number;
@@ -43,7 +49,7 @@ export interface ListingDocument extends mongoose.Document {
   images: ListingImage[];
   amenities: mongoose.Schema.Types.ObjectId[];
   host: mongoose.Schema.Types.ObjectId;
-  status: 'draft' | 'published' | 'archived';
+  status: ListingStatus;
   category: mongoose.Schema.Types.ObjectId;
 }
 
@@ -77,8 +83,8 @@ const listingSchema = new mongoose.Schema(
     host: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     status: {
       type: String,
-      enum: ['draft', 'published', 'archived'],
-      default: 'draft',
+      enum: ListingStatus,
+      default: ListingStatus.DRAFT,
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,

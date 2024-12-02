@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-import { register } from '@/actions/auth';
+import { register } from '@/actions/auth.actions';
 
 const INITIAL_STATE = {
   name: '',

@@ -4,4 +4,4 @@ export type Pagination = {
   total: number;
 };
 
-export type ErrorResponse = { errors: string | string[] };
+export type ErrorResponse = string | string[];

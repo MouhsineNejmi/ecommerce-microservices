@@ -36,11 +36,11 @@ export const TiptapEditor = ({
           'min-h-[150px] border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-ring',
       },
     },
+    immediatelyRender: false,
     onUpdate: ({ editor }) => {
       const content = editor.getHTML();
       const cleanContent = content.replace(/<p><\/p>/g, '').trim();
 
-      // Update form value
       setValue(name, cleanContent, {
         shouldValidate: true,
         shouldDirty: true,
@@ -48,8 +48,6 @@ export const TiptapEditor = ({
 
       // Trigger validation
       trigger(name);
-
-      // Call external onChange if provided
       onChange?.(cleanContent);
     },
   });

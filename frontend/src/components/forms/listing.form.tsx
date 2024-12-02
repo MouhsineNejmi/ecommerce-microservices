@@ -288,16 +288,29 @@ export const ListingForm = ({
               <FormItem>
                 <FormLabel>Status</FormLabel>
                 <FormControl>
-                  <Select {...field}>
+                  <Select
+                    onValueChange={(value) => {
+                      // Ensure the value is a valid ListingStatus
+                      const validStatus = Object.values(ListingStatus).includes(
+                        value as ListingStatus
+                      )
+                        ? value
+                        : undefined;
+                      field.onChange(validStatus);
+                    }}
+                    value={field.value || ''}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder='Select a status' />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.values(ListingStatus).map((status, index) => (
-                        <SelectItem key={index} value={status}>
-                          <span className='flex items-center gap-2'>
-                            {status}
-                          </span>
+                      {Object.values(ListingStatus).map((status) => (
+                        <SelectItem
+                          key={status}
+                          value={status}
+                          className='flex items-center justify-between'
+                        >
+                          {status}
                         </SelectItem>
                       ))}
                     </SelectContent>

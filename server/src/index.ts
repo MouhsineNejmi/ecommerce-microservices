@@ -39,8 +39,8 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/amenities', amenityRoutes);
 app.use('/api/reservations', reservationRoutes);
 
-app.all('*', async (req: Request, res: Response) => {
-  throw new NotFoundError('API Route Not Found.');
+app.all('*', async (req: Request, res: Response, next: NextFunction) => {
+  next(new NotFoundError('API Route Not Found.'));
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

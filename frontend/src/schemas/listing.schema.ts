@@ -38,7 +38,7 @@ const locationSchema = z.object({
 const priceSchema = z.object({
   basePrice: z
     .number()
-    .min(0, { message: 'Base price must be a positive number' }),
+    .min(5, { message: 'Base price must be at least 5 dollars' }),
   cleaningFee: z
     .number()
     .min(0, { message: 'Cleaning fee must be positive' })
@@ -70,7 +70,7 @@ export const createListingSchema = z.object({
     .max(5000, { message: 'Description cannot exceed 5000 characters' }),
   location: locationSchema,
   price: priceSchema,
-  images: z.array(imageSchema),
+  images: z.array(imageSchema, { message: 'Images are required' }),
   amenities: z.array(z.string({ message: 'Amenities must be valid IDs' })),
   status: z.enum(['draft', 'published', 'archived']).default('draft'),
   category: z.string().min(1, { message: 'Category is required' }),
@@ -80,7 +80,7 @@ export const createListingSchema = z.object({
     .max(50, { message: 'Max guests must be between 1 and 50' }),
   bedrooms: z
     .number()
-    .min(0, { message: 'Bedrooms must be 0 or more' })
+    .min(1, { message: 'Bedrooms must be 0 or more' })
     .max(50, { message: 'Bedrooms must be between 0 and 50' }),
   beds: z
     .number()

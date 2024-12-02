@@ -1,15 +1,16 @@
 'use client';
-
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Loader2, Trash } from 'lucide-react';
+import { DollarSign, Loader2, Trash } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,7 +30,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Icon } from '@/components/icon';
-import { ImageUploader } from '../image-uploader';
+import { ImageUploader } from '@/components/image-uploader';
+import CountrySelect from '../country-select';
 
 import { useRequest } from '@/hooks/use-request';
 import { toast } from '@/hooks/use-toast';
@@ -42,12 +44,18 @@ import {
 import { Category } from '@/types/category';
 import { Amenity } from '@/types/amenity';
 import { Listing, ListingStatus } from '@/types/listings';
+import { getCountryCoordinates } from '@/lib/utils/coordinates';
 
 interface ListingFormProps {
   initialData: Listing | null;
   categories: Category[];
   amenities: Amenity[];
 }
+
+const LocationMap = dynamic(
+  () => import('../location-map').then((mod) => mod.LocationMap),
+  { ssr: false }
+);
 
 export const ListingForm = ({
   initialData,
@@ -60,18 +68,12 @@ export const ListingForm = ({
   const [images, setImages] = useState<{ url: string; caption: string }[]>(
     initialData?.images || []
   );
-
-  const { execute: createListing, loading: isCreatingListing } = useRequest({
-    url: '/api/listings',
-    method: 'post',
-  });
-  const { execute: editListing, loading: isEditingListing } = useRequest({
-    url: `/api/listings/${listingId}`,
-    method: 'put',
-  });
-  const { execute: deleteListing, loading: isDeletingListing } = useRequest({
-    url: `/api/listings/${listingId}`,
-    method: 'delete',
+  const [selectedLocation, setSelectedLocation] = useState<{
+    lat: number;
+    lng: number;
+  }>({
+    lat: initialData?.location?.coordinates?.lat || 0,
+    lng: initialData?.location?.coordinates?.lng || 0,
   });
 
   const title = initialData ? 'Edit listing' : 'Create listing';
@@ -91,9 +93,9 @@ export const ListingForm = ({
         }
       : {
           title: '',
-          description: '',
+          description: '<p>Listing description</p>',
           price: {
-            basePrice: 0,
+            basePrice: 5,
             cleaningFee: 0,
             serviceFee: 0,
           },
@@ -101,9 +103,10 @@ export const ListingForm = ({
             address: '',
             city: '',
             state: '',
-            country: '',
+            country: 'MA',
             coordinates: { lat: 0, lng: 0 },
           },
+          status: 'draft',
           category: '',
           maxGuests: 1,
           bedrooms: 1,
@@ -111,6 +114,46 @@ export const ListingForm = ({
           baths: 1,
           amenities: [],
         },
+  });
+
+  const handleImageChange = (newImages: { url: string; caption: string }[]) => {
+    setImages(newImages);
+    console.log(JSON.stringify(images, null, 2));
+  };
+
+  const handleAmenitiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const amenityId = e.target.value;
+    const isChecked = e.target.checked;
+
+    const currentAmenities = form.getValues('amenities') || [];
+
+    const updatedAmenities = isChecked
+      ? [...currentAmenities, amenityId]
+      : currentAmenities.filter((id) => id !== amenityId);
+
+    form.setValue('amenities', updatedAmenities);
+  };
+
+  const handleLocationSelect = (lat: number, lng: number) => {
+    form.setValue('location.coordinates.lat', lat);
+    form.setValue('location.coordinates.lng', lng);
+
+    form.trigger('location.coordinates');
+
+    setSelectedLocation({ lat, lng });
+  };
+
+  const { execute: createListing, loading: isCreatingListing } = useRequest({
+    url: '/api/listings',
+    method: 'post',
+  });
+  const { execute: editListing, loading: isEditingListing } = useRequest({
+    url: `/api/listings/${listingId}`,
+    method: 'put',
+  });
+  const { execute: deleteListing, loading: isDeletingListing } = useRequest({
+    url: `/api/listings/${listingId}`,
+    method: 'delete',
   });
 
   const onSubmit = async (values: ListingSchemaType) => {
@@ -153,23 +196,6 @@ export const ListingForm = ({
     }
   };
 
-  const handleImageChange = (newImages: { url: string; caption: string }[]) => {
-    setImages(newImages);
-  };
-
-  const handleAmenitiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const amenityId = e.target.value;
-    const isChecked = e.target.checked;
-
-    const currentAmenities = form.getValues('amenities') || [];
-
-    const updatedAmenities = isChecked
-      ? [...currentAmenities, amenityId]
-      : currentAmenities.filter((id) => id !== amenityId);
-
-    form.setValue('amenities', updatedAmenities);
-  };
-
   const loading = isCreatingListing || isEditingListing || isDeletingListing;
 
   return (
@@ -182,6 +208,7 @@ export const ListingForm = ({
             variant='destructive'
             size='sm'
             onClick={() => setIsModalOpen(true)}
+            className='mt-4'
           >
             <Trash className='h-4 w-4' />
           </Button>
@@ -210,7 +237,10 @@ export const ListingForm = ({
                 <FormControl>
                   <ImageUploader
                     initialImages={initialData?.images}
-                    onChange={handleImageChange}
+                    onChange={(images) => {
+                      handleImageChange(images);
+                      form.setValue('images', images);
+                    }}
                     maxImages={5}
                   />
                 </FormControl>
@@ -240,7 +270,12 @@ export const ListingForm = ({
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <TiptapEditor name='description' />
+                  <TiptapEditor
+                    name='description'
+                    initialContent={
+                      initialData?.description || form.getValues('description')
+                    }
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -290,7 +325,6 @@ export const ListingForm = ({
                 <FormControl>
                   <Select
                     onValueChange={(value) => {
-                      // Ensure the value is a valid ListingStatus
                       const validStatus = Object.values(ListingStatus).includes(
                         value as ListingStatus
                       )
@@ -308,9 +342,10 @@ export const ListingForm = ({
                         <SelectItem
                           key={status}
                           value={status}
+                          defaultChecked={status === form.getValues('status')}
                           className='flex items-center justify-between'
                         >
-                          {status}
+                          <span className='capitalize'>{status}</span>
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -370,6 +405,7 @@ export const ListingForm = ({
                           : Number(e.target.value);
                       onChange(value);
                     }}
+                    min={1}
                     {...field}
                   />
                 </FormControl>
@@ -395,6 +431,7 @@ export const ListingForm = ({
                           : Number(e.target.value);
                       onChange(value);
                     }}
+                    min={1}
                     {...field}
                   />
                 </FormControl>
@@ -413,13 +450,8 @@ export const ListingForm = ({
                   <Input
                     type='number'
                     placeholder='Enter the number of bedrooms'
-                    onChange={(e) => {
-                      const value =
-                        e.target.value === ''
-                          ? undefined
-                          : Number(e.target.value);
-                      onChange(value);
-                    }}
+                    onChange={(e) => onChange(Number(e.target.value))}
+                    min={1}
                     {...field}
                   />
                 </FormControl>
@@ -438,13 +470,8 @@ export const ListingForm = ({
                   <Input
                     type='number'
                     placeholder='Enter the number of beds'
-                    onChange={(e) => {
-                      const value =
-                        e.target.value === ''
-                          ? undefined
-                          : Number(e.target.value);
-                      onChange(value);
-                    }}
+                    onChange={(e) => onChange(Number(e.target.value))}
+                    min={1}
                     {...field}
                   />
                 </FormControl>
@@ -452,15 +479,146 @@ export const ListingForm = ({
               </FormItem>
             )}
           />
+          {/* Pricing */}
+          <div className='grid gap-4'>
+            <FormField
+              control={form.control}
+              name='price.basePrice'
+              render={({ field: { onChange, ...field } }) => (
+                <FormItem>
+                  <FormLabel>Base Price (per night)</FormLabel>
+                  <FormControl>
+                    <div className='relative'>
+                      <DollarSign className='absolute left-3 top-2 h-5 w-5 text-muted-foreground' />
+                      <Input
+                        type='number'
+                        className='pl-10'
+                        placeholder='0.00'
+                        min={5}
+                        onChange={(e) => onChange(Number(e.target.value))}
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    This is the base nightly rate for your listing
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='price.cleaningFee'
+              render={({ field: { onChange, ...field } }) => (
+                <FormItem>
+                  <FormLabel>Cleaning Fee</FormLabel>
+                  <FormControl>
+                    <div className='relative'>
+                      <DollarSign className='absolute left-3 top-2 h-5 w-5 text-muted-foreground' />
+                      <Input
+                        type='number'
+                        className='pl-10'
+                        placeholder='0.00'
+                        min={0}
+                        onChange={(e) => onChange(Number(e.target.value))}
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    One-time fee charged to guests for cleaning
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='price.serviceFee'
+              render={({ field: { onChange, ...field } }) => (
+                <FormItem>
+                  <FormLabel>Service Fee</FormLabel>
+                  <FormControl>
+                    <div className='relative'>
+                      <DollarSign className='absolute left-3 top-2 h-5 w-5 text-muted-foreground' />
+                      <Input
+                        type='number'
+                        className='pl-10'
+                        placeholder='0.00'
+                        min={0}
+                        onChange={(e) => onChange(Number(e.target.value))}
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    Additional service fee charged to guests
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           {/* Location */}
-          <div className='grid md:grid-cols-2 gap-4'>
+          <div className='grid gap-4'>
+            <FormField
+              control={form.control}
+              name='location.country'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Country</FormLabel>
+                  <FormControl>
+                    <CountrySelect
+                      defaultValue={field.value}
+                      onCountryChange={(value) => {
+                        field.onChange(value);
+                        const coords = getCountryCoordinates(value);
+                        form.setValue('location.coordinates', {
+                          lat: coords.lat,
+                          lng: coords.lng,
+                        });
+                      }}
+                      placeholder='Select country'
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='location.coordinates'
+              render={({ field }) => (
+                <FormItem>
+                  <div className='mb-6'>
+                    <LocationMap
+                      center={[field.value.lat, field.value.lng]}
+                      zoom={
+                        getCountryCoordinates(
+                          form.control._getWatch('location.country') || 'US'
+                        ).zoom
+                      }
+                      onLocationSelect={(lat: number, lng: number) => {
+                        field.onChange({ lat, lng });
+                      }}
+                    />
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name='location.address'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>Street Address</FormLabel>
                   <FormControl>
                     <Input placeholder='Enter street address' {...field} />
                   </FormControl>
@@ -491,153 +649,6 @@ export const ListingForm = ({
                   <FormLabel>State</FormLabel>
                   <FormControl>
                     <Input placeholder='Enter state' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='location.country'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Country</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Enter country' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Coordinates */}
-          <div className='grid md:grid-cols-2 gap-4'>
-            <FormField
-              control={form.control}
-              name='location.coordinates.lat'
-              render={({ field: { onChange, ...field } }) => (
-                <FormItem>
-                  <FormLabel>Longitude</FormLabel>
-                  <FormControl>
-                    <Input
-                      type='number'
-                      step='0.000001'
-                      placeholder='Enter latitude'
-                      onChange={(e) => {
-                        const value =
-                          e.target.value === ''
-                            ? undefined
-                            : Number(e.target.value);
-                        onChange(value);
-                      }}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='location.coordinates.lng'
-              render={({ field: { onChange, ...field } }) => (
-                <FormItem>
-                  <FormLabel>Longitude</FormLabel>
-                  <FormControl>
-                    <Input
-                      type='number'
-                      step='0.000001'
-                      placeholder='Enter longitude'
-                      onChange={(e) => {
-                        const value =
-                          e.target.value === ''
-                            ? undefined
-                            : Number(e.target.value);
-                        onChange(value);
-                      }}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Price */}
-          <div className='grid md:grid-cols-3 gap-4'>
-            <FormField
-              control={form.control}
-              name='price.basePrice'
-              render={({ field: { onChange, ...field } }) => (
-                <FormItem>
-                  <FormLabel>Base Price</FormLabel>
-                  <FormControl>
-                    <Input
-                      type='number'
-                      placeholder='Enter base price'
-                      onChange={(e) => {
-                        const value =
-                          e.target.value === ''
-                            ? undefined
-                            : Number(e.target.value);
-                        onChange(value);
-                      }}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='price.cleaningFee'
-              render={({ field: { onChange, ...field } }) => (
-                <FormItem>
-                  <FormLabel>Cleaning Price</FormLabel>
-                  <FormControl>
-                    <Input
-                      type='number'
-                      placeholder='Enter cleaning price'
-                      onChange={(e) => {
-                        const value =
-                          e.target.value === ''
-                            ? undefined
-                            : Number(e.target.value);
-                        onChange(value);
-                      }}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='price.serviceFee'
-              render={({ field: { onChange, ...field } }) => (
-                <FormItem>
-                  <FormLabel>Service Price</FormLabel>
-                  <FormControl>
-                    <Input
-                      type='number'
-                      placeholder='Enter service price'
-                      onChange={(e) => {
-                        const value =
-                          e.target.value === ''
-                            ? undefined
-                            : Number(e.target.value);
-                        onChange(value);
-                      }}
-                      {...field}
-                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

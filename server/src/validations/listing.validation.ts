@@ -68,17 +68,13 @@ export const createListingValidation: ValidationChain[] = [
     .isFloat({ min: -180, max: 180 })
     .withMessage('Longitude must be between -180 and 180'),
 
-  body('price')
-    .notEmpty()
-    .withMessage('Price is required')
-    .isObject()
-    .withMessage('Price must be an object'),
+  body('price').notEmpty().withMessage('Price is required'),
 
   body('price.basePrice')
     .notEmpty()
     .withMessage('Base price is required')
-    .isFloat({ min: 0 })
-    .withMessage('Base price must be a positive number'),
+    .isFloat({ min: 5 })
+    .withMessage('Base price must be at least 5 dollars'),
 
   body('price.cleaningFee')
     .optional()
@@ -133,7 +129,7 @@ export const createListingValidation: ValidationChain[] = [
   body('bedrooms')
     .notEmpty()
     .withMessage('Number of bedrooms is required')
-    .isInt({ min: 0, max: 50 })
+    .isInt({ min: 1, max: 50 })
     .withMessage('Number of bedrooms must be between 0 and 50'),
 
   body('beds')
@@ -145,7 +141,7 @@ export const createListingValidation: ValidationChain[] = [
   body('baths')
     .notEmpty()
     .withMessage('Number of bathrooms is required')
-    .isFloat({ min: 0.5, max: 50 })
+    .isFloat({ min: 1, max: 50 })
     .withMessage('Number of bathrooms must be between 0.5 and 50'),
 ];
 

@@ -15,7 +15,6 @@ import { setTokenCookies } from '../utils/cookies';
 import { User } from '../models/user';
 
 import {
-  addressValidation,
   loginValidation,
   registerValidation,
 } from '../validations/user.validation';
@@ -132,23 +131,6 @@ router.get(
     const user = await User.findById(req.user?.id).select('-password');
 
     return res.json({ data: user });
-  })
-);
-
-router.post(
-  '/addresses',
-  requireAuth,
-  addressValidation,
-  validate,
-  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.user!;
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      { $push: { addresses: req.body } },
-      { new: true, runValidators: true }
-    );
-
-    return res.status(201).json({ data: updatedUser?.addresses });
   })
 );
 

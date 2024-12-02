@@ -1,7 +1,6 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
     remotePatterns: [
       { hostname: 'localhost', protocol: 'http' },
@@ -9,6 +8,13 @@ const nextConfig: NextConfig = {
       { hostname: 'res.cloudinary.com', protocol: 'https' },
     ],
   },
+  reactStrictMode: false,
+  // webpack: (config) => {
+  //   config.externals.push({
+  //     leaflet: 'L',
+  //   });
+  //   return config;
+  // },
 };
 
 export default nextConfig;

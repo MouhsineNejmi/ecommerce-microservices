@@ -18,11 +18,11 @@ interface ImageUploadProps {
   maxImages?: number;
 }
 
-export const ImageUploader: React.FC<ImageUploadProps> = ({
+export function ImageUploader({
   initialImages = [],
   onChange,
   maxImages = 5,
-}) => {
+}: ImageUploadProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [images, setImages] = useState<ListingImage[]>(initialImages);
@@ -33,7 +33,6 @@ export const ImageUploader: React.FC<ImageUploadProps> = ({
     if (input?.files) {
       const filesArray = Array.from(input.files);
 
-      // Check max images limit
       if (images.length + filesArray.length > maxImages) {
         toast({
           title: `Maximum ${maxImages} images allowed`,
@@ -100,17 +99,12 @@ export const ImageUploader: React.FC<ImageUploadProps> = ({
       });
 
       const newImages = await Promise.all(uploadPromises);
-
-      // Combine existing images with new uploads
       const updatedImages = [...images, ...newImages].slice(0, maxImages);
 
       setImages(updatedImages);
       onChange(updatedImages);
-
-      // Reset preview state
       setFiles([]);
       setPreviewImages([]);
-
       setIsUploading(false);
     } catch {
       toast({
@@ -123,7 +117,6 @@ export const ImageUploader: React.FC<ImageUploadProps> = ({
 
   return (
     <div className='space-y-4'>
-      {/* Image Upload Input */}
       <label
         htmlFor='imageUpload'
         className={`
@@ -140,7 +133,6 @@ export const ImageUploader: React.FC<ImageUploadProps> = ({
           id='imageUpload'
           type='file'
           multiple
-          // accept='image/png, image/jpeg, image/jpg'
           accept='image/*'
           className='hidden'
           onChange={handleImageChange}
@@ -154,7 +146,6 @@ export const ImageUploader: React.FC<ImageUploadProps> = ({
         </span>
       </label>
 
-      {/* Preview Images */}
       {previewImages.length > 0 && (
         <div>
           <h4 className='text-md font-semibold mb-2'>Preview Images:</h4>
@@ -189,7 +180,6 @@ export const ImageUploader: React.FC<ImageUploadProps> = ({
         </div>
       )}
 
-      {/* Uploaded Images */}
       {images.length > 0 && (
         <div>
           <h4 className='text-md font-semibold mb-2'>Uploaded Images:</h4>
@@ -228,4 +218,4 @@ export const ImageUploader: React.FC<ImageUploadProps> = ({
       </div>
     </div>
   );
-};
+}

@@ -127,10 +127,19 @@ router.delete(
   '/:id',
   requireAuth,
   asyncHandler(async (req: Request, res: Response) => {
-    const listing = await Listing.findOneAndDelete({
-      id: req.params.id,
-      host: req.user!.id,
-    });
+    const { id: listingId } = req.params;
+    const { id: userId, role } = req.user!;
+
+    let listing;
+
+    if (role === 'admin') {
+      listing = await Listing.findByIdAndDelete(listingId);
+    } else {
+      listing = await Listing.findOneAndDelete({
+        id: listingId,
+        host: userId,
+      });
+    }
 
     if (!listing) {
       throw new NotFoundError('Listing not found');

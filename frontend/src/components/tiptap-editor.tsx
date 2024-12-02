@@ -15,7 +15,7 @@ interface TiptapEditorProps {
 
 export const TiptapEditor = ({
   name,
-  placeholder = 'Write your description...',
+  placeholder = 'Listing description...',
   initialContent = '',
   onChange,
 }: TiptapEditorProps) => {

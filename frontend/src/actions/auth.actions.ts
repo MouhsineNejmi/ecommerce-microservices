@@ -174,7 +174,6 @@ export const register = async (
 
     if (response.status !== 201) {
       const errorData = await response.json();
-      console.log('errorData', errorData);
 
       return {
         ...prevState,

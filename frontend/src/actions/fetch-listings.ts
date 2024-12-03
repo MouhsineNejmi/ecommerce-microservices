@@ -1,29 +1,32 @@
 import { cookies } from 'next/headers';
 
 import { Listing } from '@/types/listings';
-import { Pagination } from '@/types/global';
+import { ErrorResponse, Pagination } from '@/types/global';
 
 export async function fetchListings(
   page: number = 1,
   limit: number = 10,
   search: string = '',
+  category: string = '',
   sortBy: string = 'name',
   sortOrder: 'asc' | 'desc' = 'asc'
 ): Promise<{
-  data: Listing[];
-  pagination: Pagination;
+  data?: Listing[];
+  pagination?: Pagination;
+  errors?: ErrorResponse | null;
 }> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
   if (!accessToken) {
-    throw new Error('Please login to continue');
+    return { errors: ['Please login to continue'] };
   }
 
   const queryParams = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
     search,
+    category,
     sortBy,
     sortOrder,
   });
@@ -38,10 +41,10 @@ export async function fetchListings(
 
   if (!res.ok) {
     const data = await res.json();
-    throw new Error(data.errors[0].message);
+    return { errors: data.errors as string[] };
   }
 
   const { data, pagination } = await res.json();
 
-  return { data, pagination };
+  return { data, pagination, errors: null };
 }

@@ -11,7 +11,7 @@ export async function fetchListing(listingId: string): Promise<{
   const accessToken = cookieStore.get('accessToken')?.value;
 
   if (!accessToken) {
-    throw new Error('No authentication token found');
+    return { errors: 'No authentication token found' };
   }
 
   try {
@@ -24,17 +24,14 @@ export async function fetchListing(listingId: string): Promise<{
     });
 
     if (!res.ok) {
-      const errorData = await res.json();
-      console.log('ERROR: ', errorData);
-
+      // const errorData = await res.json();
       return { errors: 'Failed to fetch data' };
     }
 
     const { data } = await res.json();
 
     return data;
-  } catch (error) {
-    console.error('Failed to fetch listing: ', error);
+  } catch {
     return { errors: 'Something went wrong!' };
   }
 }

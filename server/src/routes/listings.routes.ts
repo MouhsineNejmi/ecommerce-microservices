@@ -11,49 +11,80 @@ import {
   createListingValidation,
   updateListingValidation,
 } from '../validations/listing.validation';
+import { Category } from '../models/category';
 
 const router = express.Router();
+
+export interface ListingQueryParams {
+  page?: string | number;
+  limit?: string | number;
+  status?: string;
+  category?: string;
+  minPrice?: string | number;
+  maxPrice?: string | number;
+  city?: string;
+  country?: string;
+}
+
+const buildFilterQuery = async (queryParams: ListingQueryParams) => {
+  const filter: any = {};
+
+  if (queryParams.status) {
+    filter.status = queryParams.status;
+  }
+
+  if (queryParams.minPrice || queryParams.maxPrice) {
+    filter['price.basePrice'] = {
+      ...(queryParams.minPrice && { $gte: Number(queryParams.minPrice) }),
+      ...(queryParams.maxPrice && { $lte: Number(queryParams.maxPrice) }),
+    };
+  }
+
+  if (queryParams.city) {
+    filter['location.city'] = queryParams.city;
+  }
+
+  if (queryParams.country) {
+    filter['location.country'] = queryParams.country;
+  }
+
+  if (queryParams.category) {
+    console.log(queryParams);
+
+    const category = await Category.findOne({
+      name: {
+        $regex: new RegExp('^' + queryParams.category.toLowerCase(), 'i'),
+      },
+    });
+    if (category) {
+      filter.category = category._id;
+    }
+  }
+
+  return filter;
+};
 
 router.get(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
-    const {
-      page = 1,
-      limit = 10,
-      status,
-      category,
-      minPrice,
-      maxPrice,
-      city,
-      country,
-    } = req.query;
-
-    const filter: any = {};
-    if (status) filter.status = status;
-    if (category) filter.category = category;
-    if (minPrice || maxPrice) {
-      filter['price.basePrice'] = {
-        ...(minPrice && { $gte: Number(minPrice) }),
-        ...(maxPrice && { $lte: Number(maxPrice) }),
-      };
-    }
-    if (city) filter['location.city'] = city;
-    if (country) filter['location.country'] = country;
+    const filter = await buildFilterQuery(req.query);
 
     const listings = await Listing.find(filter)
-      .limit(Number(limit))
-      .skip((Number(page) - 1) * Number(limit))
+      .limit(Number(filter.limit))
+      .skip((Number(filter.page) - 1) * Number(filter.limit))
       .sort({ createdAt: -1 })
       .populate('amenities', 'icon name')
-      .populate('category', 'name');
+      .populate('category', 'id icon name');
+
+    console.log(filter, listings);
 
     const total = await Listing.countDocuments(filter);
 
     return res.status(200).json({
       data: listings,
       pagination: {
-        currentPage: Number(page),
-        totalPages: Math.ceil(total / Number(limit)),
+        currentPage: Number(filter.page),
+        totalPages: Math.ceil(total / Number(filter.limit)),
         total,
       },
     });

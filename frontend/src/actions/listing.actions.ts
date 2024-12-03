@@ -133,8 +133,6 @@ export const createListing = async (
       baths: Number(formData.get('baths')),
     });
 
-    console.log(formData.get('amenitites'));
-
     if (!validatedFields.success) {
       return {
         ...prevState,

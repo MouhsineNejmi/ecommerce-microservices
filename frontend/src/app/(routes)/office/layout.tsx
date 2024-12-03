@@ -8,7 +8,7 @@ import { Menu } from 'lucide-react';
 import { getCurrentUser } from '@/actions/get-current-user';
 
 const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
-  const user = await getCurrentUser();
+  const { data: user } = await getCurrentUser();
 
   if (!user || 'errors' in user) {
     redirect('/login');

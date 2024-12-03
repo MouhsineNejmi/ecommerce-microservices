@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 
 import { Category } from '@/types/category';
-import { Pagination } from '@/types/global';
+import { ErrorResponse, Pagination } from '@/types/global';
 
 export async function fetchCategories(
   page: number = 1,
@@ -10,14 +10,15 @@ export async function fetchCategories(
   sortBy: string = 'name',
   sortOrder: 'asc' | 'desc' = 'asc'
 ): Promise<{
-  data: Category[];
-  pagination: Pagination;
+  data?: Category[];
+  pagination?: Pagination;
+  errors?: ErrorResponse | null;
 }> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
   if (!accessToken) {
-    throw new Error('Please login to continue');
+    return { errors: ['Please login to continue'] };
   }
 
   const queryParams = new URLSearchParams({
@@ -41,10 +42,10 @@ export async function fetchCategories(
 
   if (!res.ok) {
     const data = await res.json();
-    throw new Error(data.errors[0].message);
+    return { errors: data.errors };
   }
 
   const { data, pagination } = await res.json();
 
-  return { data, pagination };
+  return { data, pagination, errors: null };
 }

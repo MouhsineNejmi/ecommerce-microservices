@@ -26,7 +26,6 @@ export async function getCurrentUser(): Promise<{
 
     if (!res.ok) {
       const errorData = await res.json();
-      console.log('errorData', errorData);
       return { errors: errorData.errors };
     }
 

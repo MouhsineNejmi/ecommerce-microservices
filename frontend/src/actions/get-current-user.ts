@@ -6,7 +6,7 @@ import { ErrorResponse } from '@/types/global';
 
 export async function getCurrentUser(): Promise<{
   data?: User;
-  errors?: ErrorResponse;
+  errors?: ErrorResponse | null;
 }> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
@@ -30,8 +30,7 @@ export async function getCurrentUser(): Promise<{
     }
 
     const { data: user } = await res.json();
-
-    return user;
+    return { data: user, errors: null };
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return { errors: 'Failed to fetch current user' };

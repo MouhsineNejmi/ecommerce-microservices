@@ -39,7 +39,7 @@ export const UserMenu = ({ user }: UserMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <>
+        <div className='flex items-center gap-4 cursor-pointer p-2 rounded-lg transition-colors hover:bg-slate-200'>
           <Avatar className='h-8 w-8 rounded-lg'>
             {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
             <AvatarFallback className='rounded-lg'>
@@ -50,8 +50,8 @@ export const UserMenu = ({ user }: UserMenuProps) => {
             <span className='truncate font-semibold'>{user?.name}</span>
             <span className='truncate text-xs'>{user?.email}</span>
           </div>
-        </>
-        <ChevronsUpDown className='ml-auto size-4' />
+          <ChevronsUpDown className='ml-auto size-4' />
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'

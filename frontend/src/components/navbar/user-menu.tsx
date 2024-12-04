@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   BadgeCheck,
   ChevronsUpDown,
@@ -25,13 +27,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 import { User } from '@/types/user';
-import Link from 'next/link';
 
 interface UserMenuProps {
   user?: User | null;
 }
 
 export const UserMenu = ({ user }: UserMenuProps) => {
+  const router = useRouter();
+
   if (!user) {
     return <Link href='/login'>Login</Link>;
   }
@@ -73,19 +76,19 @@ export const UserMenu = ({ user }: UserMenuProps) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push('/profile')}>
             <BadgeCheck />
             Account
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push('/favorites')}>
             <Heart />
             Favorite Properties
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push('/my-properties')}>
             <House />
             Your Properties
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push('/my-reservations')}>
             <CreditCard />
             Your Reservation
           </DropdownMenuItem>

@@ -25,8 +25,9 @@ const ListingPage = async ({ params }: ListingPageProps) => {
   return (
     <ListingForm
       initialData={listing}
-      categories={categories}
+      categories={categories || []}
       amenities={amenities}
+      redirectTo='/office/listings'
     />
   );
 };

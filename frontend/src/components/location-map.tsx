@@ -77,7 +77,7 @@ export function LocationMap({
       center={center}
       zoom={zoom}
       style={{
-        height: '400px',
+        height: '600px',
         width: '100%',
         borderRadius: '0.5rem',
         zIndex: 10,

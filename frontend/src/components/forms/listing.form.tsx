@@ -1,7 +1,7 @@
 'use client';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { DollarSign, Loader2, Trash } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -47,20 +47,17 @@ import { Listing, ListingStatus } from '@/types/listings';
 import { getCountryCoordinates } from '@/lib/utils/coordinates';
 
 interface ListingFormProps {
-  initialData: Listing | null;
+  initialData?: Listing | null;
   categories: Category[];
   amenities: Amenity[];
+  redirectTo?: '/my-properties' | '/office/listings';
 }
-
-const LocationMap = dynamic(
-  () => import('../location-map').then((mod) => mod.LocationMap),
-  { ssr: false }
-);
 
 export const ListingForm = ({
   initialData,
   categories,
   amenities,
+  redirectTo = '/my-properties',
 }: ListingFormProps) => {
   const { listingId } = useParams();
   const router = useRouter();
@@ -168,7 +165,7 @@ export const ListingForm = ({
         await createListing({ data: listingData });
       }
 
-      router.push(`/office/listings`);
+      router.push(redirectTo);
       toast({ title: toastMessage });
     } catch (error) {
       toast({
@@ -183,7 +180,7 @@ export const ListingForm = ({
   const handleDelete = async () => {
     try {
       await deleteListing();
-      router.push(`/office/listings`);
+      router.push(redirectTo);
       toast({ title: 'Listing deleted successfully.' });
     } catch (error) {
       toast({
@@ -197,30 +194,40 @@ export const ListingForm = ({
 
   const loading = isCreatingListing || isEditingListing || isDeletingListing;
 
+  const LocationMap = useMemo(
+    () =>
+      dynamic(() => import('../location-map').then((mod) => mod.LocationMap), {
+        ssr: false,
+      }),
+    []
+  );
+
   return (
     <>
-      <Heading title={title} description={description} />
+      <div className='flex items-center justify-between'>
+        <Heading title={title} description={description} />
 
-      {initialData && (
-        <>
-          <Button
-            variant='destructive'
-            size='sm'
-            onClick={() => setIsModalOpen(true)}
-            className='mt-4'
-          >
-            <Trash className='h-4 w-4' />
-          </Button>
+        {initialData && (
+          <>
+            <Button
+              variant='destructive'
+              size='sm'
+              onClick={() => setIsModalOpen(true)}
+              className='mt-4'
+            >
+              <Trash className='h-4 w-4' />
+            </Button>
 
-          <AlertModal
-            title='Confirm Deletion'
-            description='Are you sure you want to delete this item? This action cannot be undone.'
-            isOpen={isModalOpen}
-            onConfirm={handleDelete}
-            onCancel={() => setIsModalOpen(false)}
-          />
-        </>
-      )}
+            <AlertModal
+              title='Confirm Deletion'
+              description='Are you sure you want to delete this item? This action cannot be undone.'
+              isOpen={isModalOpen}
+              onConfirm={handleDelete}
+              onCancel={() => setIsModalOpen(false)}
+            />
+          </>
+        )}
+      </div>
 
       <Form {...form}>
         <form

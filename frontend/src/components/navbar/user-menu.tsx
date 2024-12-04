@@ -82,15 +82,15 @@ export const UserMenu = ({ user }: UserMenuProps) => {
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => router.push('/favorites')}>
             <Heart />
-            Favorite Properties
+            My Favorite Properties
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => router.push('/my-properties')}>
             <House />
-            Your Properties
+            My Properties
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => router.push('/my-reservations')}>
             <CreditCard />
-            Your Reservation
+            My Reservation
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

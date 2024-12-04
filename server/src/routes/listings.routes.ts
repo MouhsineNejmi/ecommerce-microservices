@@ -33,6 +33,7 @@ export interface ListingQueryParams {
   maxGuests?: string | number;
   startDate?: string | Date;
   endDate?: string | Date;
+  hostId?: string;
 }
 
 const buildFilterQuery = async (queryParams: ListingQueryParams) => {
@@ -100,6 +101,10 @@ const buildFilterQuery = async (queryParams: ListingQueryParams) => {
         },
       },
     ];
+  }
+
+  if (queryParams.hostId) {
+    filter.host = queryParams.hostId;
   }
 
   return filter;

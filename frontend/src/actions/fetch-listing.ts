@@ -4,8 +4,8 @@ import { Listing } from '@/types/listings';
 import { ErrorResponse } from '@/types/global';
 
 export async function fetchListing(listingId: string): Promise<{
-  data?: Listing[];
-  errors?: ErrorResponse;
+  data?: Listing;
+  errors?: ErrorResponse | null;
 }> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
@@ -30,7 +30,7 @@ export async function fetchListing(listingId: string): Promise<{
 
     const { data } = await res.json();
 
-    return data;
+    return { data, errors: null };
   } catch {
     return { errors: 'Something went wrong!' };
   }

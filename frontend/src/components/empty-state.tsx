@@ -6,12 +6,14 @@ interface EmptyStateProps {
   title?: string;
   subtitle?: string;
   showReset?: boolean;
+  action?: React.ReactNode;
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({
   title = 'No Exact Matches',
   subtitle = 'Try changing or removing some of your filters',
   showReset,
+  action,
 }) => {
   return (
     <div className='h-[60vh] flex flex-col gap-2 justify-center items-center'>
@@ -23,6 +25,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           </Button>
         )}
       </div>
+      <>{action && action}</>
     </div>
   );
 };

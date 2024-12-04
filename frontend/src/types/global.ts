@@ -21,4 +21,5 @@ export interface SearchQuery {
   maxGuests?: string | number;
   startDate?: string;
   endDate?: string;
+  hostId?: string;
 }

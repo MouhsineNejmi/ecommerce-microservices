@@ -4,7 +4,12 @@ import { validate } from '../middlewares/validator.middleware';
 import { currentUser } from '../middlewares/current-user.middleware';
 import { requireAuth } from '../middlewares/require-auth.middleware';
 import { securityMiddleware } from '../middlewares/security.middleware';
-import { ConflictError, BadRequestError, UnauthorizedError } from '../errors';
+import {
+  ConflictError,
+  BadRequestError,
+  UnauthorizedError,
+  NotFoundError,
+} from '../errors';
 
 import { Password } from '../services/password.service';
 import { AuthService } from '../services/auth.service';
@@ -18,6 +23,7 @@ import {
   loginValidation,
   registerValidation,
 } from '../validations/user.validation';
+import { Listing } from '../models/listings';
 
 const router = express.Router();
 
@@ -131,6 +137,64 @@ router.get(
     const user = await User.findById(req.user?.id).select('-password');
 
     return res.json({ data: user });
+  })
+);
+
+router.get(
+  '/favorites',
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id;
+    const user = await User.findById(userId).populate('favorites');
+
+    return res.json({ data: user?.favorites || [] });
+  })
+);
+
+router.post(
+  '/favorites/:listingId',
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id;
+    const { listingId } = req.params;
+
+    const user = await User.findById(userId);
+    const listing = await Listing.findById(listingId);
+
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    if (!listing) {
+      throw new NotFoundError('Listing not found');
+    }
+
+    if (!user.favorites?.includes(listing.id)) {
+      user?.favorites?.push(listing.id);
+      await user.save();
+    }
+
+    return res.json({ data: user?.favorites || [] });
+  })
+);
+
+router.delete(
+  '/favorites/:listingId',
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id;
+    const { listingId } = req.params;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    user.favorites = user.favorites?.filter(
+      (id) => id.toString() !== listingId
+    );
+
+    await user.save();
+
+    return res.json({ data: user?.favorites || [] });
   })
 );
 

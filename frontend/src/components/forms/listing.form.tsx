@@ -68,13 +68,13 @@ export const ListingForm = ({
   const [images, setImages] = useState<{ url: string; caption: string }[]>(
     initialData?.images || []
   );
-  const [selectedLocation, setSelectedLocation] = useState<{
-    lat: number;
-    lng: number;
-  }>({
-    lat: initialData?.location?.coordinates?.lat || 0,
-    lng: initialData?.location?.coordinates?.lng || 0,
-  });
+  // const [selectedLocation, setSelectedLocation] = useState<{
+  //   lat: number;
+  //   lng: number;
+  // }>({
+  //   lat: initialData?.location?.coordinates?.lat || 0,
+  //   lng: initialData?.location?.coordinates?.lng || 0,
+  // });
 
   const title = initialData ? 'Edit listing' : 'Create listing';
   const description = initialData ? 'Update a listing' : 'Add a new listing';
@@ -118,7 +118,6 @@ export const ListingForm = ({
 
   const handleImageChange = (newImages: { url: string; caption: string }[]) => {
     setImages(newImages);
-    console.log(JSON.stringify(images, null, 2));
   };
 
   const handleAmenitiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,14 +133,14 @@ export const ListingForm = ({
     form.setValue('amenities', updatedAmenities);
   };
 
-  const handleLocationSelect = (lat: number, lng: number) => {
-    form.setValue('location.coordinates.lat', lat);
-    form.setValue('location.coordinates.lng', lng);
+  // const handleLocationSelect = (lat: number, lng: number) => {
+  //   form.setValue('location.coordinates.lat', lat);
+  //   form.setValue('location.coordinates.lng', lng);
 
-    form.trigger('location.coordinates');
+  //   form.trigger('location.coordinates');
 
-    setSelectedLocation({ lat, lng });
-  };
+  //   setSelectedLocation({ lat, lng });
+  // };
 
   const { execute: createListing, loading: isCreatingListing } = useRequest({
     url: '/api/listings',

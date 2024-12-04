@@ -10,11 +10,12 @@ import { Button } from '@/components/ui/button';
 import { HeartButton } from '@/components/heart-button';
 
 import { Reservation } from '@/types/reservation';
+import { User } from '@/types/user';
 
 type ListingCardProps = {
   listing: Listing;
   reservation?: Reservation;
-  // currentUser?: IUser | null;
+  currentUser?: User | null;
   disabled?: boolean;
   actionLabel?: string;
   actionId?: string;
@@ -24,7 +25,7 @@ type ListingCardProps = {
 const ListingCard: React.FC<ListingCardProps> = ({
   listing,
   reservation,
-  // currentUser,
+  currentUser,
   disabled,
   actionLabel,
   actionId = '',
@@ -49,9 +50,9 @@ const ListingCard: React.FC<ListingCardProps> = ({
     }
 
     return (
-      listing.price.basePrice +
-      listing.price.cleaningFee +
-      listing.price.serviceFee
+      Number(listing.price.basePrice) +
+      Number(listing.price.cleaningFee) +
+      Number(listing.price.serviceFee)
     );
   }, [reservation, listing.price]);
 
@@ -78,10 +79,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
         <ImageCarousel images={listing.images} />
         <div className='absolute right-2 top-2'>
           {listing.id && (
-            <HeartButton
-              listingId={listing.id}
-              // currentUser={currentUser}
-            />
+            <HeartButton listingId={listing.id} currentUser={currentUser} />
           )}
         </div>
       </div>

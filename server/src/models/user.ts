@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import { ListingAttrs } from './listings';
+
 import { Password } from '../services/password.service';
 import { UserRole } from '../types/user.types';
 
@@ -17,6 +19,7 @@ interface UserAttrs {
   password: string;
   role?: UserRole;
   addresses?: UserAddress[];
+  favorites?: ListingAttrs[];
 }
 
 export interface UserDocument extends mongoose.Document {
@@ -25,6 +28,7 @@ export interface UserDocument extends mongoose.Document {
   password: string;
   role: UserRole;
   addresses: UserAddress[];
+  favorites?: ListingAttrs[];
 }
 
 interface UserModel extends mongoose.Model<UserDocument> {
@@ -54,14 +58,11 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
-    addresses: [
+    favorites: [
       {
-        street: String,
-        city: String,
-        state: String,
-        zipCode: String,
-        country: String,
-        isDefault: Boolean,
+        type: mongoose.Types.ObjectId,
+        ref: 'Listing',
+        default: [],
       },
     ],
   },

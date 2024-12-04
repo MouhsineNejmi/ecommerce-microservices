@@ -2,16 +2,11 @@ import EmptyState from '@/components/empty-state';
 import ListingCard from '@/components/listings/listing-card';
 
 import { fetchListings } from '@/actions/fetch-listings';
+import { SearchQuery } from '@/types/global';
 
-const HomePage = async ({
-  searchParams,
-}: {
-  searchParams: { category?: string };
-}) => {
-  const { category } = await searchParams;
-  const { data: listings, errors } = await fetchListings(1, 10, '', category);
-
-  // console.log(listings);
+const HomePage = async ({ searchParams }: { searchParams: SearchQuery }) => {
+  const params = await searchParams;
+  const { data: listings, errors } = await fetchListings(1, 10, params);
 
   if (errors) {
     <EmptyState showReset />;

@@ -12,18 +12,27 @@ import {
   updateListingValidation,
 } from '../validations/listing.validation';
 import { Category } from '../models/category';
+import { deepMerge } from '../utils/deep-merge';
+// import { Reservation } from '../models/reservations';
 
 const router = express.Router();
 
 export interface ListingQueryParams {
   page?: string | number;
   limit?: string | number;
+  search?: string;
   status?: string;
   category?: string;
   minPrice?: string | number;
   maxPrice?: string | number;
   city?: string;
   country?: string;
+  baths?: string | number;
+  bedrooms?: string | number;
+  beds?: string | number;
+  maxGuests?: string | number;
+  startDate?: string | Date;
+  endDate?: string | Date;
 }
 
 const buildFilterQuery = async (queryParams: ListingQueryParams) => {
@@ -40,6 +49,21 @@ const buildFilterQuery = async (queryParams: ListingQueryParams) => {
     };
   }
 
+  const numericFilters = [
+    { key: 'baths', filterKey: 'baths' },
+    { key: 'bedrooms', filterKey: 'bedrooms' },
+    { key: 'beds', filterKey: 'beds' },
+    { key: 'maxGuests', filterKey: 'maxGuests' },
+  ];
+
+  numericFilters.forEach(({ key, filterKey }) => {
+    if (queryParams[key as keyof ListingQueryParams]) {
+      filter[filterKey] = {
+        $gte: Number(queryParams[key as keyof ListingQueryParams]),
+      };
+    }
+  });
+
   if (queryParams.city) {
     filter['location.city'] = queryParams.city;
   }
@@ -49,8 +73,6 @@ const buildFilterQuery = async (queryParams: ListingQueryParams) => {
   }
 
   if (queryParams.category) {
-    console.log(queryParams);
-
     const category = await Category.findOne({
       name: {
         $regex: new RegExp('^' + queryParams.category.toLowerCase(), 'i'),
@@ -61,12 +83,32 @@ const buildFilterQuery = async (queryParams: ListingQueryParams) => {
     }
   }
 
+  if (queryParams.search) {
+    filter.$or = [
+      { title: { $regex: new RegExp(queryParams.search as string, 'i') } },
+      {
+        description: { $regex: new RegExp(queryParams.search as string, 'i') },
+      },
+      {
+        'location.city': {
+          $regex: new RegExp(queryParams.search as string, 'i'),
+        },
+      },
+      {
+        'location.country': {
+          $regex: new RegExp(queryParams.search as string, 'i'),
+        },
+      },
+    ];
+  }
+
   return filter;
 };
 
 router.get(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
+    const { limit = 10, page = 1 } = req.params;
     const filter = await buildFilterQuery(req.query);
 
     const listings = await Listing.find(filter)
@@ -76,15 +118,13 @@ router.get(
       .populate('amenities', 'icon name')
       .populate('category', 'id icon name');
 
-    console.log(filter, listings);
-
     const total = await Listing.countDocuments(filter);
 
     return res.status(200).json({
       data: listings,
       pagination: {
-        currentPage: Number(filter.page),
-        totalPages: Math.ceil(total / Number(filter.limit)),
+        currentPage: Number(page),
+        totalPages: Math.ceil(total / Number(limit)),
         total,
       },
     });
@@ -132,23 +172,30 @@ router.put(
   updateListingValidation,
   validate,
   asyncHandler(async (req: Request, res: Response) => {
-    const listing = await Listing.findById(req.params.id);
+    const { id: listingId } = req.params;
+    const { id: userId, role } = req.user!;
+    const { host, ...updateData } = req.body;
+
+    let listing;
+
+    if (role === 'admin') {
+      listing = await Listing.findById(req.params.id, updateData);
+    } else {
+      listing = await Listing.findOneAndUpdate({
+        id: listingId,
+        host: userId,
+      });
+    }
 
     if (!listing) {
       throw new NotFoundError('Listing not found');
     }
 
-    if (listing.host.toString() !== req.user!.id) {
-      throw new UnauthorizedError('Not authorized to update this listing');
-    }
+    const updatedListingData = deepMerge(listing.toObject(), updateData);
 
-    const { host, ...updateData } = req.body;
-
-    Object.keys(updateData).forEach((key) => {
-      listing.set(key, updateData[key]);
+    listing = await Listing.findByIdAndUpdate(listingId, updatedListingData, {
+      new: true,
     });
-
-    await listing.save();
 
     return res.status(200).json({ data: listing });
   })

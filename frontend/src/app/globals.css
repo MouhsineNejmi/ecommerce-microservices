@@ -71,3 +71,7 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.rdrMonth {
+  width: 100% !important;
+}

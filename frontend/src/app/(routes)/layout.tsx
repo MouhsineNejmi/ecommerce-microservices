@@ -3,6 +3,7 @@ import { Poppins } from 'next/font/google';
 import '../globals.css';
 
 import { Toaster } from '@/components/ui/toaster';
+import { SearchModal } from '@/components/modals/search-modal';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -24,6 +25,7 @@ const RootLayout = ({
       <body className={`${poppins.className}`}>
         <>{children}</>
         <Toaster />
+        <SearchModal />
       </body>
     </html>
   );

@@ -1,12 +1,15 @@
+'use client';
+
 import { Search as SearchIcon } from 'lucide-react';
-// import useSearchModal from '@/hooks/useSearchModal';
+
+import { useSearchModal } from '@/hooks/use-search-modal';
 
 const Search = () => {
-  // const searchModal = useSearchModal();
+  const searchModal = useSearchModal();
 
   return (
     <div
-      // onClick={() => searchModal.onOpen()}
+      onClick={() => searchModal.onOpen()}
       className='border md:w-auto py-2 rounded-full shadow-sm hover:shadow-md transition cursor-pointer'
     >
       <div className='flex flex-row items-center justify-between'>

@@ -1,15 +1,12 @@
 import { cookies } from 'next/headers';
 
 import { Listing } from '@/types/listings';
-import { ErrorResponse, Pagination } from '@/types/global';
+import { ErrorResponse, Pagination, SearchQuery } from '@/types/global';
 
 export async function fetchListings(
   page: number = 1,
   limit: number = 10,
-  search: string = '',
-  category: string = '',
-  sortBy: string = 'name',
-  sortOrder: 'asc' | 'desc' = 'asc'
+  searchParams: SearchQuery = {}
 ): Promise<{
   data?: Listing[];
   pagination?: Pagination;
@@ -22,13 +19,36 @@ export async function fetchListings(
     return { errors: ['Please login to continue'] };
   }
 
+  const {
+    category = '',
+    minPrice = '',
+    maxPrice = '',
+    baths = '',
+    bedrooms = '',
+    beds = '',
+    maxGuests = '',
+    city = '',
+    country = '',
+    startDate = '',
+    endDate = '',
+    status = '',
+  } = searchParams;
+
   const queryParams = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
-    search,
     category,
-    sortBy,
-    sortOrder,
+    minPrice: minPrice.toString(),
+    maxPrice: maxPrice.toString(),
+    baths: baths.toString(),
+    bedrooms: bedrooms.toString(),
+    beds: beds.toString(),
+    maxGuests: maxGuests.toString(),
+    city,
+    country,
+    startDate,
+    endDate,
+    status,
   });
 
   const res = await fetch(`http://localhost:4000/api/listings?${queryParams}`, {

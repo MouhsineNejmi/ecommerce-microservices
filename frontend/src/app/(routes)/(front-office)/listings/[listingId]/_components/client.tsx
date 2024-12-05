@@ -78,10 +78,10 @@ const ListingClient = ({ listing, reservations, user }: ListingClientProps) => {
     createReservation,
     dateRange.endDate,
     dateRange.startDate,
+    errors,
     guestCount,
     listingId,
     router,
-    totalAmount,
     user,
   ]);
 

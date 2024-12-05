@@ -1,18 +1,52 @@
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import { revalidatePath } from 'next/cache';
 
 import EmptyState from '@/components/empty-state';
-import ListingCard from '@/components/listings/listing-card';
+import DataTable from '@/components/data-table';
 import { Heading } from '@/components/ui/heading';
+import { columns } from './_components/columns';
 
 import { getCurrentUser } from '@/actions/get-current-user';
 import { fetchListings } from '@/actions/fetch-listings';
 
 const MyPropertiesPage = async () => {
   const { data: user } = await getCurrentUser();
-  const { data: currentUserListings, errors } = await fetchListings(1, 10, {
+  const {
+    data: currentUserListings,
+    pagination,
+    errors,
+  } = await fetchListings(1, 10, {
     hostId: user?.id,
   });
+
+  const handlePageChange = async (page: number) => {
+    'use server';
+    const { data, pagination } = await fetchListings(page);
+    revalidatePath('/my-properties');
+    return {
+      data: data || [],
+      pagination: pagination || {
+        currentPage: 0,
+        totalPages: 0,
+        total: 0,
+      },
+    };
+  };
+
+  const handleSearch = async (search: string) => {
+    'use server';
+    const { data, pagination } = await fetchListings(1, 10, { search });
+    revalidatePath('/my-properties');
+    return {
+      data: data || [],
+      pagination: pagination || {
+        currentPage: 0,
+        totalPages: 0,
+        total: 0,
+      },
+    };
+  };
 
   if (errors) {
     return <p>Something went wrong. Please try again.</p>;
@@ -55,11 +89,14 @@ const MyPropertiesPage = async () => {
         </Link>
       </div>
 
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8 pt-5'>
-        {currentUserListings?.map((listing) => (
-          <ListingCard key={listing.id} listing={listing} currentUser={user} />
-        ))}
-      </div>
+      {currentUserListings && pagination && (
+        <DataTable
+          data={{ data: currentUserListings, pagination }}
+          columns={columns}
+          onPageChange={handlePageChange}
+          onSearch={handleSearch}
+        />
+      )}
     </div>
   );
 };

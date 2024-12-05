@@ -1,33 +1,97 @@
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-} from '@/components/ui/breadcrumb';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import Link from 'next/link';
+import { revalidatePath } from 'next/cache';
+import { Home } from 'lucide-react';
 
-const ReservationsPage = () => {
+import EmptyState from '@/components/empty-state';
+import { Heading } from '@/components/ui/heading';
+import DataTable from '@/components/data-table';
+import { columns } from './_components/columns';
+
+import { getCurrentUser } from '@/actions/get-current-user';
+import { fetchReservations } from '@/actions/fetch-reservations';
+
+const ReservationsPage = async () => {
+  const { data: user } = await getCurrentUser();
+  const {
+    data: reservations,
+    pagination,
+    errors,
+  } = await fetchReservations(1, 10, {
+    userId: user?.id,
+  });
+
+  const handlePageChange = async (page: number) => {
+    'use server';
+    const { data, pagination } = await fetchReservations(page);
+    revalidatePath('/office/reservations');
+    return {
+      data: data || [],
+      pagination: pagination || {
+        currentPage: 0,
+        totalPages: 0,
+        total: 0,
+      },
+    };
+  };
+
+  const handleSearch = async (search: string) => {
+    'use server';
+    const { data, pagination } = await fetchReservations(1, 10, { search });
+    revalidatePath('/office/reservations');
+    return {
+      data: data || [],
+      pagination: pagination || {
+        currentPage: 0,
+        totalPages: 0,
+        total: 0,
+      },
+    };
+  };
+
+  if (errors) {
+    return <p>Something went wrong. Please try again.</p>;
+  }
+
+  if (reservations?.length === 0) {
+    return (
+      <>
+        <EmptyState
+          title="Look like there's no reservations"
+          subtitle='Here you can view all the reservations across the platform'
+          action={
+            <Link
+              className='bg-purple-500 text-white text-sm gap-2 flex items-center px-4 py-2 rounded-md hover:bg-purple-600 transition-colors'
+              href='/'
+            >
+              <Home />
+              Go Home
+            </Link>
+          }
+        />
+      </>
+    );
+  }
+
   return (
-    <SidebarProvider>
-      <SidebarInset>
-        <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
-          <div className='flex items-center gap-2 px-4'>
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className='hidden md:block'>
-                  <BreadcrumbLink href='/office/reservations'>
-                    Reservations
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
-        <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-          <h2>Reservations Client</h2>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className='pt-5'>
+      <div className='flex items-center justify-between mb-8'>
+        <Heading
+          title='All Reservations'
+          description='A collection of all the reservations. '
+        />
+      </div>
+
+      {reservations && pagination && (
+        <DataTable
+          data={{ data: reservations, pagination }}
+          columns={columns}
+          onPageChange={handlePageChange}
+          onSearch={handleSearch}
+        />
+      )}
+
+      {errors && errors}
+    </div>
   );
 };
 

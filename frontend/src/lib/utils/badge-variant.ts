@@ -6,19 +6,19 @@ export const badgeVariant = (
   if (!status) return 'warning';
 
   if (
-    status ===
-    (PaymentStatus.COMPLETED ||
-      ReservationStatus.COMPLETED ||
-      ReservationStatus.CONFIRMED)
+    status === PaymentStatus.COMPLETED ||
+    status === ReservationStatus.COMPLETED ||
+    status === ReservationStatus.CONFIRMED
   )
     return 'success';
+
   if (
-    status ===
-    (PaymentStatus.FAILED ||
-      PaymentStatus.REFUNDED ||
-      ReservationStatus.CANCELLED)
-  )
+    status === PaymentStatus.FAILED ||
+    status === PaymentStatus.REFUNDED ||
+    status === ReservationStatus.CANCELLED
+  ) {
     return 'destructive';
+  }
 
   return 'warning';
 };

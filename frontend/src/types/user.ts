@@ -1,5 +1,3 @@
-import { Listing } from './listings';
-
 export enum UserRole {
   ADMIN = 'admin',
   USER = 'user',
@@ -12,6 +10,7 @@ export interface User {
   role: UserRole;
   token?: string;
   favorites?: string[];
+  avatar?: string;
 }
 
 export interface AuthResponse {
@@ -20,6 +19,7 @@ export interface AuthResponse {
   email: string;
   role: UserRole;
   token: string;
+  avatar?: string;
 }
 
 export interface LoginCredentials {

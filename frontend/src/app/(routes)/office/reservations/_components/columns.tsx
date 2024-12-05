@@ -10,6 +10,7 @@ import { CellAction } from './cell-action';
 import { Reservation, ReservationStatus } from '@/types/reservation';
 import { Listing } from '@/types/listings';
 import { User } from '@/types/user';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export const columns: ColumnDef<Reservation<Listing, User>>[] = [
   {
@@ -47,6 +48,29 @@ export const columns: ColumnDef<Reservation<Listing, User>>[] = [
     header: 'Payment Status',
     accessorKey: 'paymentStatus',
     cell: ({ row }) => <StatusBadge status={row.original.paymentStatus} />,
+    enableSorting: true,
+  },
+  {
+    header: 'Listing Owner',
+    accessorKey: 'userId',
+    cell: ({ row }) => (
+      <div className='flex items-center gap-2'>
+        <Avatar className='h-8 w-8 rounded-lg'>
+          <AvatarImage
+            src={row.original.userId.avatar}
+            alt={row.original.userId.name}
+          />
+          <AvatarFallback className='rounded-lg'>
+            {row.original.userId?.name.substring(0, 2)}
+          </AvatarFallback>
+        </Avatar>
+        <div className='grid flex-1 text-left text-sm leading-tight'>
+          <span className='truncate font-semibold'>
+            {row.original.userId?.name}
+          </span>
+        </div>
+      </div>
+    ),
     enableSorting: true,
   },
   {

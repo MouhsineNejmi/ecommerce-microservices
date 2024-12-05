@@ -13,6 +13,7 @@ export enum PaymentStatus {
 }
 
 export interface Reservation<T, U> {
+  id?: string;
   listingId: T;
   userId: U;
   startDate: Date;

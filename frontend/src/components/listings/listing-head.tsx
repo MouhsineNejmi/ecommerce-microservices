@@ -14,12 +14,7 @@ type ListingHeadProps = {
   id: string;
 };
 
-export const ListingHead = ({
-  title,
-  location,
-  images,
-  id,
-}: ListingHeadProps) => {
+export const ListingHead = ({ title, location, images }: ListingHeadProps) => {
   const countryName = useMemo(
     () => COUNTRIES.find((country) => country.code === location.country)?.name,
     [location.country]

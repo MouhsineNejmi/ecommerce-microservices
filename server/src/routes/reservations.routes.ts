@@ -1,4 +1,5 @@
 import { Request, Response, Router } from 'express';
+import mongoose from 'mongoose';
 
 import { asyncHandler } from '../utils/async-handler';
 import { requireAuth } from '../middlewares/require-auth.middleware';
@@ -24,8 +25,11 @@ import { UserRole } from '../types/user.types';
 const router = Router();
 const paymentService = new PaymentService(config.stripe.secretKey as string);
 
+router.use(currentUser);
+
 router.get(
   '/',
+  requireAuth,
   asyncHandler(async (req: Request, res: Response) => {
     const {
       page = 1,
@@ -42,17 +46,34 @@ router.get(
 
     const filter: any = {};
 
-    if (userId) filter.userId = req.user?.id;
-    if (listingId) filter.listingId = listingId;
+    // if (userId) filter.userId = new mongoose.Types.ObjectId(req.user?.id);
+    // if (listingId)
+    //   filter.listingId = new mongoose.Types.ObjectId(listingId as string);
+    // Check and validate userId
+    if (req.user?.id && mongoose.isValidObjectId(req.user?.id)) {
+      filter.userId = new mongoose.Types.ObjectId(req.user?.id);
+    }
+
+    // Check and validate listingId
+    if (listingId && mongoose.isValidObjectId(listingId as string)) {
+      filter.listingId = new mongoose.Types.ObjectId(listingId as string);
+    }
+
     if (status) filter.status = status;
     if (guestCount) filter.guestCount = guestCount;
 
-    if (startDate || endDate) {
+    if (startDate) {
       filter.startDate = {
         ...(startDate && { $gte: new Date(startDate as string) }),
+      };
+    }
+
+    if (endDate) {
+      filter.endDate = {
         ...(endDate && { $lte: new Date(endDate as string) }),
       };
     }
+
     if (minAmount || maxAmount) {
       filter.totalAmount = {
         ...(minAmount && { $gte: Number(minAmount) }),
@@ -78,8 +99,6 @@ router.get(
     });
   })
 );
-
-router.use(currentUser);
 
 router.post(
   '/',

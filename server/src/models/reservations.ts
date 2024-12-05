@@ -58,11 +58,13 @@ interface ReservationModel extends mongoose.Model<ReservationDoc> {
 const reservationSchema = new Schema(
   {
     listingId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Listing',
       required: true,
     },
     userId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     startDate: {

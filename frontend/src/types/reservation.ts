@@ -12,14 +12,14 @@ export enum PaymentStatus {
   REFUNDED = 'refunded',
 }
 
-export interface Reservation {
-  listingId: string;
-  userId: string;
+export interface Reservation<T, U> {
+  listingId: T;
+  userId: U;
   startDate: Date;
   endDate: Date;
   totalAmount: number;
   guestCount: number;
   status?: ReservationStatus;
   paymentStatus?: PaymentStatus;
-  paymentIntentId?: string;
+  createdAt: string;
 }

@@ -22,4 +22,5 @@ export interface SearchQuery {
   startDate?: string;
   endDate?: string;
   hostId?: string;
+  search?: string;
 }

@@ -42,22 +42,14 @@ router.get(
       status,
       startDate,
       endDate,
+      search,
     } = req.query;
 
     const filter: any = {};
 
-    // if (userId) filter.userId = new mongoose.Types.ObjectId(req.user?.id);
-    // if (listingId)
-    //   filter.listingId = new mongoose.Types.ObjectId(listingId as string);
-    // Check and validate userId
-    if (req.user?.id && mongoose.isValidObjectId(req.user?.id)) {
-      filter.userId = new mongoose.Types.ObjectId(req.user?.id);
-    }
-
-    // Check and validate listingId
-    if (listingId && mongoose.isValidObjectId(listingId as string)) {
+    if (userId) filter.userId = new mongoose.Types.ObjectId(req.user?.id);
+    if (listingId)
       filter.listingId = new mongoose.Types.ObjectId(listingId as string);
-    }
 
     if (status) filter.status = status;
     if (guestCount) filter.guestCount = guestCount;
@@ -81,11 +73,18 @@ router.get(
       };
     }
 
+    if (search) {
+      filter.$or = {
+        status: { $regex: new RegExp(search as string, 'i') },
+      };
+    }
+
     const reservations = await Reservation.find(filter)
       .limit(Number(limit))
       .skip((Number(page) - 1) * Number(limit))
       .sort({ createdAt: -1 })
-      .populate('listingId', 'title location images');
+      .populate('listingId', 'title location images')
+      .populate('userId', 'avatar name');
 
     const total = await Reservation.countDocuments(filter);
 

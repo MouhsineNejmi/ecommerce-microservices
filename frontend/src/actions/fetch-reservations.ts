@@ -2,13 +2,15 @@ import { cookies } from 'next/headers';
 
 import { Reservation } from '@/types/reservation';
 import { ErrorResponse, Pagination } from '@/types/global';
+import { Listing } from '@/types/listings';
+import { User } from '@/types/user';
 
 export async function fetchReservations(
   page: number = 1,
   limit: number = 10,
-  searchParams: { listingId?: string } = {}
+  searchParams: { listingId?: string; userId?: string; search?: string } = {}
 ): Promise<{
-  data?: Reservation[];
+  data?: Reservation<Listing, User>[];
   pagination?: Pagination;
   errors?: ErrorResponse | null;
 }> {
@@ -19,15 +21,14 @@ export async function fetchReservations(
     return { errors: ['Please login to continue'] };
   }
 
-  const { listingId } = searchParams;
+  const { listingId = '', userId = '', search = '' } = searchParams;
   const queryParams = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
+    listingId,
+    userId,
+    search,
   });
-
-  if (listingId) {
-    queryParams.append('listingId', listingId);
-  }
 
   const res = await fetch(
     `http://localhost:4000/api/reservations?${queryParams}`,

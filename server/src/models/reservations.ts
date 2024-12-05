@@ -143,9 +143,14 @@ reservationSchema.statics.calculateTotalAmount = async function (
   }
 
   const nights = Math.ceil(
-    (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+    new Date(endDate).getDate() - new Date(startDate).getDate()
   );
-  const baseAmount = Number(listing.price) * nights;
+
+  const baseAmount =
+    (Number(listing.price.basePrice) +
+      Number(listing.price.cleaningFee) +
+      Number(listing.price.serviceFee)) *
+    nights;
 
   return baseAmount;
 };

@@ -1,4 +1,6 @@
-interface ListingLocation {
+import { Category } from './category';
+
+export interface ListingLocation {
   address: string;
   city: string;
   state: string;
@@ -6,13 +8,13 @@ interface ListingLocation {
   coordinates: { lat: number; lng: number };
 }
 
-interface ListingPrice {
+export interface ListingPrice {
   basePrice: number;
   cleaningFee: number;
   serviceFee: number;
 }
 
-interface ListingImage {
+export interface ListingImage {
   url: string;
   caption: string;
 }
@@ -21,6 +23,12 @@ interface Amenities {
   id: string;
   icon: string;
   name: string;
+}
+
+export interface Host {
+  id: string;
+  name: string;
+  avatar: string;
 }
 
 export enum ListingStatus {
@@ -37,12 +45,9 @@ export interface Listing {
   price: ListingPrice;
   images: ListingImage[];
   amenities: Amenities[];
-  host: string;
+  host: string | Host;
   status: 'draft' | 'published' | 'archived';
-  category: {
-    name: string;
-    id: string;
-  };
+  category: Category;
   maxGuests: number;
   bedrooms: number;
   beds: number;

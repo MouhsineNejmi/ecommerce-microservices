@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import { Minus, Plus } from 'lucide-react';
 import React from 'react';
 
@@ -5,6 +6,7 @@ interface CounterProps {
   title: string;
   subtitle: string;
   value: number;
+  maxValue?: number;
   onChange: (value: number) => void;
 }
 
@@ -13,8 +15,11 @@ export const Counter: React.FC<CounterProps> = ({
   subtitle,
   value,
   onChange,
+  maxValue,
 }) => {
   const onAdd = () => {
+    if (value === maxValue) return;
+
     onChange(value + 1);
   };
 
@@ -40,7 +45,11 @@ export const Counter: React.FC<CounterProps> = ({
         <h4 className='font-light text-neutral-800'>{value}</h4>
         <button
           onClick={onAdd}
-          className='w-8 h-8 rounded-full border border-neutral-400 text-neutral-600 flex justify-center items-center hover:opacity-80 transition'
+          disabled={value === maxValue}
+          className={cn(
+            'w-8 h-8 rounded-full border border-neutral-400 text-neutral-600 flex justify-center items-center hover:opacity-80 transition',
+            value === maxValue ? 'cursor-not-allowed' : ''
+          )}
         >
           <Plus />
         </button>

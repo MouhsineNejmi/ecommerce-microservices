@@ -139,9 +139,12 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
-    const listing = await Listing.findById(req.params.id)
+    const { id } = req.params;
+
+    const listing = await Listing.findById(id)
       .populate('amenities', 'icon name')
-      .populate('category', 'name');
+      .populate('category', 'id name icon')
+      .populate('host', 'id name avatar');
 
     if (!listing) {
       throw new NotFoundError('Listing not found');

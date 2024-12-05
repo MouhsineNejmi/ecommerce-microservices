@@ -13,8 +13,6 @@ const CreateProperty = async ({
   const { data: amenities } = await fetchAmenities();
   const { data: listing } = await fetchListing(listingId);
 
-  console.log(listingId);
-
   return (
     <ListingForm
       initialData={listing}

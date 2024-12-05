@@ -41,8 +41,8 @@ export const useRequest = ({ url, method }: UseRequestProps) => {
     } catch (err: any) {
       if (err instanceof AxiosError) {
         setErrors(
-          <div className='flex items-center gap-4 bg-red-300 p-2 rounded-md text-sm'>
-            <TriangleAlert className='text-red-500' />
+          <div className='flex items-center gap-4 bg-red-300 p-2 rounded-md text-sm text-red-500'>
+            <TriangleAlert />
             <ul>
               {err?.response?.data?.errors?.map((err: ApiError) => (
                 <li key={err.message}>{err.message}</li>
@@ -50,14 +50,14 @@ export const useRequest = ({ url, method }: UseRequestProps) => {
             </ul>
           </div>
         );
+      } else {
+        setErrors(
+          <div className='flex items-center gap-4 bg-red-300 text-red-500 p-2 rounded-md text-sm'>
+            <TriangleAlert className='text-red-500' />
+            <p>Something went wrong! Please try again later.</p>
+          </div>
+        );
       }
-
-      setErrors(
-        <div className='flex items-center gap-4 bg-red-300 text-red-500 p-2 rounded-md text-sm'>
-          <TriangleAlert className='text-red-500' />
-          <p>Something went wrong! Please try again later.</p>
-        </div>
-      );
     } finally {
       setLoading(false);
     }

@@ -6,15 +6,10 @@ const nextConfig: NextConfig = {
       { hostname: 'localhost', protocol: 'http' },
       { hostname: 'a0.muscache.com', protocol: 'https' },
       { hostname: 'res.cloudinary.com', protocol: 'https' },
+      { hostname: 'github.com', protocol: 'https' },
     ],
   },
   reactStrictMode: false,
-  // webpack: (config) => {
-  //   config.externals.push({
-  //     leaflet: 'L',
-  //   });
-  //   return config;
-  // },
 };
 
 export default nextConfig;

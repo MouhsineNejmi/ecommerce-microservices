@@ -33,6 +33,7 @@ router.get(
       minAmount,
       maxAmount,
       guestCount,
+      userId,
       listingId,
       status,
       startDate,
@@ -41,10 +42,7 @@ router.get(
 
     const filter: any = {};
 
-    if (String(req.user!.role) !== 'admin') {
-      filter.userId = req.user!.id;
-    }
-
+    if (userId) filter.userId = req.user?.id;
     if (listingId) filter.listingId = listingId;
     if (status) filter.status = status;
     if (guestCount) filter.guestCount = guestCount;

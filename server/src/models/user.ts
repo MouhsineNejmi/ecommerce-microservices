@@ -58,6 +58,10 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
+    avatar: {
+      type: String,
+      default: 'https://github.com/shadcn.png',
+    },
     favorites: [
       {
         type: mongoose.Types.ObjectId,

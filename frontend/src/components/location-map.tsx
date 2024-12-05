@@ -23,7 +23,7 @@ const icon = L.icon({
 interface LocationMapProps {
   center: [number, number];
   zoom: number;
-  onLocationSelect: (lat: number, lng: number) => void;
+  onLocationSelect?: (lat: number, lng: number) => void;
 }
 
 function MapEvents({
@@ -88,7 +88,7 @@ export function LocationMap({
         url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
       />
       <Marker position={center} icon={icon} />
-      <MapEvents onLocationSelect={onLocationSelect} />
+      {onLocationSelect && <MapEvents onLocationSelect={onLocationSelect} />}
       <MapUpdater center={center} zoom={zoom} />
     </MapContainer>
   );

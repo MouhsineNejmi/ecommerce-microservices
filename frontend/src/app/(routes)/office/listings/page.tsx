@@ -22,14 +22,28 @@ const ListingsPage = async () => {
     'use server';
     const { data, pagination } = await fetchListings(page);
     revalidatePath('/office/listings');
-    return { data, pagination };
+    return {
+      data: data || [],
+      pagination: pagination || {
+        currentPage: 0,
+        totalPages: 0,
+        total: 0,
+      },
+    };
   };
 
   const handleSearch = async (search: string) => {
     'use server';
-    const { data, pagination } = await fetchListings(1, 10, search);
+    const { data, pagination } = await fetchListings(1, 10, { search });
     revalidatePath('/office/listings');
-    return { data, pagination };
+    return {
+      data: data || [],
+      pagination: pagination || {
+        currentPage: 0,
+        totalPages: 0,
+        total: 0,
+      },
+    };
   };
 
   return (
@@ -63,12 +77,14 @@ const ListingsPage = async () => {
             </Link>
           </div>
 
-          <DataTable
-            data={{ data, pagination }}
-            columns={columns}
-            onPageChange={handlePageChange}
-            onSearch={handleSearch}
-          />
+          {data && pagination && (
+            <DataTable
+              data={{ data, pagination }}
+              columns={columns}
+              onPageChange={handlePageChange}
+              onSearch={handleSearch}
+            />
+          )}
         </div>
       </SidebarInset>
     </SidebarProvider>

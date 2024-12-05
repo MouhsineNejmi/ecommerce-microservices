@@ -20,7 +20,7 @@ import { calculateTotal } from '@/lib/utils/calculate-total';
 
 interface ListingClientProps {
   listing: Listing;
-  reservations: Reservation[] | null;
+  reservations: Reservation<string, string>[] | null;
   user: User | null;
 }
 

@@ -32,6 +32,7 @@ export async function fetchListings(
     startDate = '',
     endDate = '',
     status = '',
+    search = '',
   } = searchParams;
 
   const queryParams = new URLSearchParams({
@@ -49,6 +50,7 @@ export async function fetchListings(
     startDate,
     endDate,
     status,
+    search,
   });
 
   const res = await fetch(`http://localhost:4000/api/listings?${queryParams}`, {

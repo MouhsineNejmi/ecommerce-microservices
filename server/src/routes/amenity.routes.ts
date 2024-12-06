@@ -15,12 +15,8 @@ import { ConflictError, NotFoundError } from '../errors';
 
 const router = Router();
 
-router.use(currentUser);
-
 router.get(
   '/',
-  requireAuth,
-  requireAdmin,
   asyncHandler(async (req: Request, res: Response) => {
     const {
       page = 1,
@@ -67,6 +63,8 @@ router.get(
     return res.json({ data: amenity });
   })
 );
+
+router.use(currentUser);
 
 router.post(
   '/',

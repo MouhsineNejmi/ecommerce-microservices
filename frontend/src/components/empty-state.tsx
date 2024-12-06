@@ -1,3 +1,5 @@
+'use client';
+
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';

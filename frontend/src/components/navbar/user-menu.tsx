@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 import { User } from '@/types/user';
+import { useRequest } from '@/hooks/use-request';
 
 interface UserMenuProps {
   user?: User | null;
@@ -31,6 +32,10 @@ interface UserMenuProps {
 
 export const UserMenu = ({ user }: UserMenuProps) => {
   const router = useRouter();
+  const { execute: handleLogout } = useRequest({
+    url: '/api/users/logout',
+    method: 'post',
+  });
 
   if (!user) {
     return <Link href='/login'>Login</Link>;
@@ -97,7 +102,7 @@ export const UserMenu = ({ user }: UserMenuProps) => {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleLogout()}>
           <LogOut />
           Log out
         </DropdownMenuItem>

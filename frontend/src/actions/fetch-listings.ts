@@ -1,5 +1,3 @@
-import { cookies } from 'next/headers';
-
 import { Listing } from '@/types/listings';
 import { ErrorResponse, Pagination, SearchQuery } from '@/types/global';
 
@@ -12,13 +10,6 @@ export async function fetchListings(
   pagination?: Pagination;
   errors?: ErrorResponse | null;
 }> {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken')?.value;
-
-  if (!accessToken) {
-    return { errors: ['Please login to continue'] };
-  }
-
   const {
     category = '',
     minPrice = '',
@@ -53,13 +44,7 @@ export async function fetchListings(
     search,
   });
 
-  const res = await fetch(`http://localhost:4000/api/listings?${queryParams}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Cookie: `accessToken=${accessToken}`,
-    },
-    cache: 'no-store',
-  });
+  const res = await fetch(`http://localhost:4000/api/listings?${queryParams}`);
 
   if (!res.ok) {
     const data = await res.json();

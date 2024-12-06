@@ -1,5 +1,3 @@
-import { cookies } from 'next/headers';
-
 import { Category } from '@/types/category';
 import { ErrorResponse, Pagination } from '@/types/global';
 
@@ -14,13 +12,6 @@ export async function fetchCategories(
   pagination?: Pagination;
   errors?: ErrorResponse | null;
 }> {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken')?.value;
-
-  if (!accessToken) {
-    return { errors: ['Please login to continue'] };
-  }
-
   const queryParams = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
@@ -30,14 +21,7 @@ export async function fetchCategories(
   });
 
   const res = await fetch(
-    `http://localhost:4000/api/categories?${queryParams}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Cookie: `accessToken=${accessToken}`,
-      },
-      cache: 'no-store',
-    }
+    `http://localhost:4000/api/categories?${queryParams}`
   );
 
   if (!res.ok) {

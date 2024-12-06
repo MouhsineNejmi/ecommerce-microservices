@@ -75,7 +75,7 @@ const MyPropertiesPage = async () => {
 
         <Link
           className='bg-purple-500 text-white text-sm gap-2 flex items-center px-4 py-2 rounded-md hover:bg-purple-600 transition-colors'
-          href='/office/listings/new'
+          href='/my-properties/new'
         >
           <Plus />
           New Listing

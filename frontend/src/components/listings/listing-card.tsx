@@ -2,21 +2,18 @@
 
 import React, { useCallback, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { format } from 'date-fns';
 
 import { Listing } from '@/types/listings';
 import { ImageCarousel } from '@/components/image-carousel';
 import { Button } from '@/components/ui/button';
 import { HeartButton } from '@/components/heart-button';
 
-import { Reservation } from '@/types/reservation';
 import { User } from '@/types/user';
 import { COUNTRIES } from '@/constants/countries';
 import { Pencil } from 'lucide-react';
 
 type ListingCardProps = {
   listing: Listing;
-  reservation?: Reservation;
   currentUser?: User | null;
   disabled?: boolean;
   actionLabel?: string;
@@ -26,7 +23,6 @@ type ListingCardProps = {
 
 const ListingCard: React.FC<ListingCardProps> = ({
   listing,
-  reservation,
   currentUser,
   disabled,
   actionLabel,
@@ -50,16 +46,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
   );
 
   const price = useMemo(() => {
-    if (reservation) {
-      return reservation.totalAmount;
-    }
-
     return (
       Number(listing.price.basePrice) +
       Number(listing.price.cleaningFee) +
       Number(listing.price.serviceFee)
     );
-  }, [reservation, listing.price]);
+  }, [listing.price]);
 
   const countryName = useMemo(
     () =>
@@ -67,20 +59,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
         ?.name,
     [listing.location.country]
   );
-
-  const reservationDate = useMemo(() => {
-    if (!reservation) {
-      return null;
-    }
-
-    const date = new Date();
-    const start = reservation.startDate ? reservation.startDate : date;
-    const end = reservation.endDate
-      ? reservation.endDate
-      : date.setDate(date.getDate() + 1);
-
-    return `${format(start, 'PP')} - ${format(end, 'PP')}`;
-  }, [reservation]);
 
   return (
     <div className='col-span-1 cursor-pointer group'>
@@ -109,12 +87,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
         </h3>
 
         <p className='font-light text-sm text-neutral-600 mb-1'>
-          {reservationDate || listing.category.name}
+          {listing.category.name}
         </p>
 
         <div className='flex flex-row items-center gap-1 mb-1'>
           <h3 className='font-semibold text-sm'>$ {price}</h3>
-          {!reservation && <p className='font-light text-sm'>/night</p>}
+          <p className='font-light text-sm'>/night</p>
         </div>
 
         {onAction && actionLabel && (

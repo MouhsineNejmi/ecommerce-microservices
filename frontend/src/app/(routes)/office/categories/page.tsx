@@ -14,6 +14,7 @@ import { DataTable } from '@/components/data-table';
 import { columns } from './_components/columns';
 
 import { fetchCategories } from '@/actions/fetch-categories';
+import { PAGINATION_INITIAL_STATE } from '@/constants/pagination';
 
 const CategoriesPage = async () => {
   const { data, pagination } = await fetchCategories();
@@ -22,14 +23,20 @@ const CategoriesPage = async () => {
     'use server';
     const { data, pagination } = await fetchCategories(page);
     revalidatePath('/office/categories');
-    return { data, pagination };
+    return {
+      data: data || [],
+      pagination: pagination || PAGINATION_INITIAL_STATE,
+    };
   };
 
   const handleSearch = async (search: string) => {
     'use server';
     const { data, pagination } = await fetchCategories(1, 10, search);
     revalidatePath('/office/categories');
-    return { data, pagination };
+    return {
+      data: data || [],
+      pagination: pagination || PAGINATION_INITIAL_STATE,
+    };
   };
 
   return (
@@ -62,12 +69,15 @@ const CategoriesPage = async () => {
               New Category
             </Link>
           </div>
-          <DataTable
-            data={{ data, pagination }}
-            columns={columns}
-            onPageChange={handlePageChange}
-            onSearch={handleSearch}
-          />
+
+          {data && pagination && (
+            <DataTable
+              data={{ data, pagination }}
+              columns={columns}
+              onPageChange={handlePageChange}
+              onSearch={handleSearch}
+            />
+          )}
         </div>
       </SidebarInset>
     </SidebarProvider>

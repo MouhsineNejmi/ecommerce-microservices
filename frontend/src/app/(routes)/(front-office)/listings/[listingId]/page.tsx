@@ -4,7 +4,11 @@ import { fetchListing } from '@/actions/fetch-listing';
 import { getCurrentUser } from '@/actions/get-current-user';
 import { fetchReservations } from '@/actions/fetch-reservations';
 
-const ListingPage = async ({ params }: { params: { listingId: string } }) => {
+const ListingPage = async ({
+  params,
+}: {
+  params: Promise<{ listingId: string }>;
+}) => {
   const { listingId } = await params;
   const { data: listing } = await fetchListing(listingId);
   const { data: user } = await getCurrentUser();

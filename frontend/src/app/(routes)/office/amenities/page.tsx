@@ -62,12 +62,15 @@ const AmenitiesPage = async () => {
               New Amenity
             </Link>
           </div>
-          <DataTable
-            data={{ data, pagination }}
-            columns={columns}
-            onPageChange={handlePageChange}
-            onSearch={handleSearch}
-          />
+
+          {data && pagination && (
+            <DataTable
+              data={{ data, pagination }}
+              columns={columns}
+              onPageChange={handlePageChange}
+              onSearch={handleSearch}
+            />
+          )}
         </div>
       </SidebarInset>
     </SidebarProvider>

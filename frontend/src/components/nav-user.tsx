@@ -48,6 +48,7 @@ export const NavUser = () => {
       setUser(user);
     };
     fetchCurrentUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) return <h2>Loading...</h2>;

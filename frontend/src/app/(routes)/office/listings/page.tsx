@@ -11,9 +11,10 @@ import {
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Heading } from '@/components/ui/heading';
 import { DataTable } from '@/components/data-table';
+import { columns } from './_components/columns';
 
 import { fetchListings } from '@/actions/fetch-listings';
-import { columns } from './_components/columns';
+import { PAGINATION_INITIAL_STATE } from '@/constants/pagination';
 
 const ListingsPage = async () => {
   const { data, pagination } = await fetchListings();
@@ -24,11 +25,7 @@ const ListingsPage = async () => {
     revalidatePath('/office/listings');
     return {
       data: data || [],
-      pagination: pagination || {
-        currentPage: 0,
-        totalPages: 0,
-        total: 0,
-      },
+      pagination: pagination || PAGINATION_INITIAL_STATE,
     };
   };
 
@@ -38,11 +35,7 @@ const ListingsPage = async () => {
     revalidatePath('/office/listings');
     return {
       data: data || [],
-      pagination: pagination || {
-        currentPage: 0,
-        totalPages: 0,
-        total: 0,
-      },
+      pagination: pagination || PAGINATION_INITIAL_STATE,
     };
   };
 

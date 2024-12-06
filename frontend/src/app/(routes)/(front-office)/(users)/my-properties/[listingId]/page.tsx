@@ -6,7 +6,7 @@ import { ListingForm } from '@/components/forms/listing.form';
 const CreateProperty = async ({
   params,
 }: {
-  params: { listingId: string };
+  params: Promise<{ listingId: string }>;
 }) => {
   const { listingId } = await params;
   const { data: categories } = await fetchCategories();

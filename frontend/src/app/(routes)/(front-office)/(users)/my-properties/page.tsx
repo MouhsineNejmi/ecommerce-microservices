@@ -9,6 +9,7 @@ import { columns } from './_components/columns';
 
 import { getCurrentUser } from '@/actions/get-current-user';
 import { fetchListings } from '@/actions/fetch-listings';
+import { PAGINATION_INITIAL_STATE } from '@/constants/pagination';
 
 const MyPropertiesPage = async () => {
   const { data: user } = await getCurrentUser();
@@ -26,11 +27,7 @@ const MyPropertiesPage = async () => {
     revalidatePath('/my-properties');
     return {
       data: data || [],
-      pagination: pagination || {
-        currentPage: 0,
-        totalPages: 0,
-        total: 0,
-      },
+      pagination: pagination || PAGINATION_INITIAL_STATE,
     };
   };
 
@@ -40,11 +37,7 @@ const MyPropertiesPage = async () => {
     revalidatePath('/my-properties');
     return {
       data: data || [],
-      pagination: pagination || {
-        currentPage: 0,
-        totalPages: 0,
-        total: 0,
-      },
+      pagination: pagination || PAGINATION_INITIAL_STATE,
     };
   };
 

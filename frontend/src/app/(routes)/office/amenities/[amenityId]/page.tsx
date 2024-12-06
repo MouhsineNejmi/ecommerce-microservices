@@ -4,9 +4,9 @@ import { fetchAmenity } from '@/actions/fetch-amenity';
 import { CategoryAmenityType } from '@/schemas/category-amenity.schema';
 
 interface AmenityPageProps {
-  params: {
+  params: Promise<{
     amenityId: string;
-  };
+  }>;
 }
 
 const AmenityPage = async ({ params }: AmenityPageProps) => {

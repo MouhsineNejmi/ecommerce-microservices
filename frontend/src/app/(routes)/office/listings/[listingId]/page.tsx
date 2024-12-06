@@ -6,9 +6,9 @@ import { fetchAmenities } from '@/actions/fetch-amenities';
 import { Listing } from '@/types/listings';
 
 interface ListingPageProps {
-  params: {
+  params: Promise<{
     listingId: string;
-  };
+  }>;
 }
 
 const ListingPage = async ({ params }: ListingPageProps) => {

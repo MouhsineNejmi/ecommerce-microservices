@@ -6,7 +6,11 @@ import { getCurrentUser } from '@/actions/get-current-user';
 
 import { SearchQuery } from '@/types/global';
 
-const HomePage = async ({ searchParams }: { searchParams: SearchQuery }) => {
+const HomePage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<SearchQuery>;
+}) => {
   const params = await searchParams;
   const { data: listings, errors } = await fetchListings(1, 10, params);
   const { data: user } = await getCurrentUser();

@@ -4,9 +4,9 @@ import { fetchCategory } from '@/actions/fetch-category';
 import { CategoryAmenityType } from '@/schemas/category-amenity.schema';
 
 interface CategoryPageProps {
-  params: {
+  params: Promise<{
     categoryId: string;
-  };
+  }>;
 }
 
 const CategoryPage = async ({ params }: CategoryPageProps) => {

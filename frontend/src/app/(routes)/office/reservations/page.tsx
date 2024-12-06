@@ -1,6 +1,4 @@
-import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
-import { Home } from 'lucide-react';
 
 import EmptyState from '@/components/empty-state';
 import { Heading } from '@/components/ui/heading';
@@ -54,21 +52,10 @@ const ReservationsPage = async () => {
 
   if (reservations?.length === 0) {
     return (
-      <>
-        <EmptyState
-          title="Look like there's no reservations"
-          subtitle='Here you can view all the reservations across the platform'
-          action={
-            <Link
-              className='bg-purple-500 text-white text-sm gap-2 flex items-center px-4 py-2 rounded-md hover:bg-purple-600 transition-colors'
-              href='/'
-            >
-              <Home />
-              Go Home
-            </Link>
-          }
-        />
-      </>
+      <EmptyState
+        title="Look like there's no reservations"
+        subtitle='Here you can view all the reservations across the platform'
+      />
     );
   }
 

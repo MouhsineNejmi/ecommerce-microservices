@@ -16,13 +16,19 @@ const HomePage = async ({
   const { data: user } = await getCurrentUser();
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8 pt-20'>
+    <>
       {listings?.length === 0 && <EmptyState />}
-      {listings &&
-        listings?.map((listing) => (
-          <ListingCard key={listing.id} listing={listing} currentUser={user} />
-        ))}
-    </div>
+      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8 pt-20'>
+        {listings &&
+          listings?.map((listing) => (
+            <ListingCard
+              key={listing.id}
+              listing={listing}
+              currentUser={user}
+            />
+          ))}
+      </div>
+    </>
   );
 };
 

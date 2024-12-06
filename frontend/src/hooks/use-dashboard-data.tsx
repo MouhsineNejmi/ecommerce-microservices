@@ -43,8 +43,6 @@ export const useDashboardData = () => {
         setStats(statsData);
         setReservations(reservationsData);
         setMonthlyRevenue(revenueData);
-
-        console.log('REVENUE DATA: ', revenueData);
       } catch (err) {
         setError('Failed to load dashboard data');
         console.error(err);

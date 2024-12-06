@@ -12,11 +12,11 @@ const HomePage = async ({
   searchParams: Promise<SearchQuery>;
 }) => {
   const params = await searchParams;
-  const { data: listings, errors } = await fetchListings(1, 10, params);
+  const { data: listings } = await fetchListings(1, 10, params);
   const { data: user } = await getCurrentUser();
 
-  if (errors) {
-    <EmptyState showReset />;
+  if (listings?.length === 0) {
+    return <EmptyState />;
   }
 
   return (

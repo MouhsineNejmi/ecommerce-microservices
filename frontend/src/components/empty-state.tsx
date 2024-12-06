@@ -16,7 +16,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   action,
 }) => {
   return (
-    <div className='h-[60vh] flex flex-col gap-2 justify-center items-center'>
+    <div className='h-[60vh] w-full flex flex-col gap-2 justify-center items-center text-center'>
       <Heading title={title} description={subtitle} />
       <div className='w-40 mt-4'>
         {showReset && (

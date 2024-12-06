@@ -140,6 +140,28 @@ router.get(
   })
 );
 
+router.put(
+  '/profile',
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+    const { name, avatar } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        ...(name && { name }),
+        ...(avatar && { avatar }),
+      },
+      {
+        new: true,
+        select: 'id name avatar',
+      }
+    );
+
+    return res.json({ data: updatedUser });
+  })
+);
+
 router.get(
   '/favorites',
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {

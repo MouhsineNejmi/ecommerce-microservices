@@ -6,6 +6,7 @@ import {
   BadgeCheck,
   ChevronsUpDown,
   CreditCard,
+  Grid2x2,
   Heart,
   House,
   LogOut,
@@ -72,6 +73,12 @@ export const UserMenu = ({ user }: UserMenuProps) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+          {user.role === 'admin' && (
+            <DropdownMenuItem onClick={() => router.push('/office/dashboard')}>
+              <Grid2x2 />
+              Dashboard
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem onClick={() => router.push('/profile')}>
             <BadgeCheck />
             Account

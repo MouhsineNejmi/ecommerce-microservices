@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { cookies } from 'next/headers';
-import { ErrorResponse } from '@/types/global';
+import { ErrorResponse } from '@/types';
 
 const loginSchema = z.object({
   email: z

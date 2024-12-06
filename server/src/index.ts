@@ -11,6 +11,7 @@ import listingRoutes from './routes/listings.routes';
 import reservationRoutes from './routes/reservations.routes';
 import categoryRoutes from './routes/category.routes';
 import amenityRoutes from './routes/amenity.routes';
+import statsRoutes from './routes/stats.routes';
 
 import { securityMiddleware } from './middlewares/security.middleware';
 import { errorHandler } from './middlewares/error-handler.middleware';
@@ -38,6 +39,7 @@ app.use('/api/listings', listingRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/amenities', amenityRoutes);
 app.use('/api/reservations', reservationRoutes);
+app.use('/api/stats', statsRoutes);
 
 app.all('*', async (req: Request, res: Response, next: NextFunction) => {
   next(new NotFoundError('API Route Not Found.'));

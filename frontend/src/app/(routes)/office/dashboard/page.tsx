@@ -5,6 +5,7 @@ import {
   BreadcrumbList,
 } from '@/components/ui/breadcrumb';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { DashboardClient } from './_components/client';
 
 const DashboardPage = () => {
   return (
@@ -23,7 +24,8 @@ const DashboardPage = () => {
             </Breadcrumb>
           </div>
         </header>
-        <div className='flex flex-1 flex-col gap-4 p-4 pt-0'></div>
+
+        <DashboardClient />
       </SidebarInset>
     </SidebarProvider>
   );
